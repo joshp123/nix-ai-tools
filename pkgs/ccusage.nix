@@ -9,17 +9,14 @@
 , git
 , python3
 , makeWrapper
-, pkgs
 , ... }:
 
 let
   nodejs = nodejs_22;
   pnpmPkg = if pnpm_10 != null then pnpm_10 else pnpm;
-  pnpmFetchDepsPkg = pkgs.callPackage "${pkgs.path}/pkgs/build-support/node/fetch-pnpm-deps" {
-    pnpm = pnpmPkg;
-  };
-  pnpmFetchDeps = pnpmFetchDepsPkg.fetchPnpmDeps;
-  pnpmConfigHook = pnpmFetchDepsPkg.pnpmConfigHook;
+  # Use pnpm.fetchDeps and pnpm.configHook directly from the pnpm package
+  pnpmFetchDeps = pnpmPkg.fetchDeps;
+  pnpmConfigHook = pnpmPkg.configHook;
 
   version = "17.2.0";
   pnpmHash = if stdenv.isLinux then "sha256-+k0w4ojGhGKNNIVrGovj6lT3WbGnN8i8AthFJQiEZyQ=" else "sha256-WY6LWQhLEKJVnI/028CPUqiH4DUyX0wTMmlY0tDfSS4=";

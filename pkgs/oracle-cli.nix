@@ -8,14 +8,13 @@
 , python3Packages
 , pkg-config
 , makeWrapper
-, pkgs
 , zstd
 }:
 
 let
-  pnpmFetchDepsPkg = pkgs.callPackage "${pkgs.path}/pkgs/build-support/node/fetch-pnpm-deps" {
-    inherit pnpm;
-  };
+  # Use pnpm.fetchDeps directly from the pnpm package
+  pnpmFetchDeps = pnpm.fetchDeps;
+  pnpmConfigHook = pnpm.configHook;
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "oracle";
@@ -67,13 +66,13 @@ PY
 
   src = finalAttrs.srcPatched;
 
-  pnpmDeps = (pnpmFetchDepsPkg.fetchPnpmDeps {
+  pnpmDeps = pnpmFetchDeps {
     pname = finalAttrs.pname;
     version = finalAttrs.version;
     src = finalAttrs.srcPatched;
     hash = "sha256-cV6sZOkhjjGPobBTgOJZrR8eQ//Y7uvTktS0Uhivc7U=";
     fetcherVersion = 3;
-  });
+  };
 
   nativeBuildInputs = [
     nodejs

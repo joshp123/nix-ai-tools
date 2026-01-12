@@ -1,0 +1,44 @@
+name: Auto-bump versions
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v12
+
+      - name: Magic Nix Cache
+        uses: DeterminateSystems/magic-nix-cache-action@v8
+
+      - name: Auto-bump packages
+        id: bump
+        run: ./scripts/auto-bump.sh
+
+      - name: Check flake
+        if: steps.bump.outputs.has_updates == 'true'
+        run: nix flake check
+
+      - name: Build linux packages
+        if: steps.bump.outputs.has_updates == 'true'
+        run: nix build .#packages.x86_64-linux --no-link
+
+      - name: Commit and push
+        if: steps.bump.outputs.has_updates == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "chore: auto-bump" || exit 0
+          git push

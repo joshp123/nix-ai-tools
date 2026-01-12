@@ -13,13 +13,5 @@ jobs:
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@v12
 
-      - name: Disable determinate-nixd (no flakehub)
-        run: sudo rm -f /nix/var/determinate/dnixd.sock
-
-      - name: Magic Nix Cache
-        uses: DeterminateSystems/magic-nix-cache-action@v8
-        with:
-          use-flakehub: false
-
       - name: Check flake
         run: nix flake check

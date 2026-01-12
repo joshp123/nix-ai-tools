@@ -65,6 +65,8 @@ let
       postPatch = ''
         substituteInPlace packages/internal/src/pricing.ts \
           --replace "using fetcher =" "const fetcher ="
+        substituteInPlace package.json \
+          --replace "pnpm@10.24.0" "pnpm@${pnpmPkg.version}"
         python3 - <<'PY'
 from pathlib import Path
 

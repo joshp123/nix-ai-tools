@@ -16,7 +16,7 @@ jobs:
       - name: Magic Nix Cache
         uses: DeterminateSystems/magic-nix-cache-action@v8
         with:
-          use-flakehub-cache: false
+          use-flakehub: false
 
       - name: Check flake
         run: nix flake check

@@ -22,7 +22,7 @@ jobs:
       - name: Magic Nix Cache
         uses: DeterminateSystems/magic-nix-cache-action@v8
         with:
-          use-flakehub-cache: false
+          use-flakehub: false
 
       - name: Auto-bump packages
         id: bump

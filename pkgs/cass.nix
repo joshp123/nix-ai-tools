@@ -8,14 +8,15 @@
 }:
 
 let
-  rev = "a2bedccabe0cd34d92a97762508641a590e89b0f";
+  # Pinned to 2c50eb2 (Opt 1.5) - before broken pages feature with missing coi-detector.js
+  rev = "2c50eb21fed426992555759daf520718c0cc8685";
   shortRev = builtins.substring 0 7 rev;
   version = "unstable-${shortRev}";
   src = fetchFromGitHub {
     owner = "Dicklesworthstone";
     repo = "coding_agent_session_search";
     rev = rev;
-    hash = "sha256-GUgMJOu20P+dj/pavV7FCYnXjhUsx85jC4LZ7bnxAOU=";
+    hash = "sha256-xBcAffHylI7H2DR2uTegaS1adpxmEZtQcURpr0W4vMs=";
   };
   opensslCombined = symlinkJoin {
     name = "openssl-combined";

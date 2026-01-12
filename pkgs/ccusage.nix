@@ -22,7 +22,7 @@ let
   pnpmConfigHook = pnpmFetchDepsPkg.pnpmConfigHook;
 
   version = "17.2.0";
-  pnpmHash = "sha256-WY6LWQhLEKJVnI/028CPUqiH4DUyX0wTMmlY0tDfSS4=";
+  pnpmHash = if stdenv.isLinux then "sha256-+k0w4ojGhGKNNIVrGovj6lT3WbGnN8i8AthFJQiEZyQ=" else "sha256-WY6LWQhLEKJVnI/028CPUqiH4DUyX0wTMmlY0tDfSS4=";
   src = fetchFromGitHub {
     owner = "ryoppippi";
     repo = "ccusage";

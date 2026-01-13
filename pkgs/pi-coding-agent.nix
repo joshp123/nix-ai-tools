@@ -66,7 +66,6 @@ buildNpmPackage {
   npmConfigHook = piNpmConfigHook;
 
   postPatch = ''
-    cp ${./pi-coding-agent-package-lock.json} package-lock.json
     if [ ! -f packages/coding-agent/CHANGELOG.md ]; then
       touch packages/coding-agent/CHANGELOG.md
     fi

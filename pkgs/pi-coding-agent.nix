@@ -9,6 +9,7 @@
 , prefetch-npm-deps
 , pkg-config
 , python3
+, cacert
 , cairo
 , freetype
 , fontconfig
@@ -138,6 +139,9 @@ PY
     HUSKY = "0";
     NODE_ENV = "development";
     npm_config_production = "false";
+    NPM_CONFIG_CAFILE = "${cacert}/etc/ssl/certs/ca-bundle.crt";
+    NODE_EXTRA_CA_CERTS = "${cacert}/etc/ssl/certs/ca-bundle.crt";
+    SSL_CERT_FILE = "${cacert}/etc/ssl/certs/ca-bundle.crt";
   };
 
   meta = with lib; {

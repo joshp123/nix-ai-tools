@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-DEFAULT_PACKAGES=(peekaboo-cli peekaboo-mcp oracle spogo dash-mcp-server xcodebuildmcp dev-browser summarize zagi pi-coding-agent)
+DEFAULT_PACKAGES=(peekaboo-cli peekaboo-mcp oracle spogo dash-mcp-server xcodebuildmcp zagi pi-coding-agent)
 AUTO_SYSTEM=${AUTO_BUMP_SYSTEM:-aarch64-darwin}
 AUTO_BUILD=${AUTO_BUMP_BUILD:-}
 if [[ $# -gt 0 ]]; then

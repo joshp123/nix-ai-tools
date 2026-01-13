@@ -19,8 +19,11 @@ jobs:
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@v12
 
-      - name: Auto-bump packages
+      - name: Auto-bump packages (source builds run in CI)
         id: bump
+        env:
+          AUTO_BUMP_BUILD: "1"
+          AUTO_BUMP_SYSTEM: "aarch64-darwin"
         run: ./scripts/auto-bump.sh
 
       - name: Check flake

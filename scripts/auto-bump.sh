@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-DEFAULT_PACKAGES=(peekaboo-cli peekaboo-mcp oracle spogo dash-mcp-server xcodebuildmcp dev-browser summarize zagi)
+DEFAULT_PACKAGES=(peekaboo-cli peekaboo-mcp oracle spogo dash-mcp-server xcodebuildmcp dev-browser summarize zagi pi-coding-agent)
+AUTO_SYSTEM=${AUTO_BUMP_SYSTEM:-aarch64-darwin}
+AUTO_BUILD=${AUTO_BUMP_BUILD:-}
 if [[ $# -gt 0 ]]; then
   PACKAGES=("$@")
 else
@@ -14,7 +16,11 @@ for pkg in "${PACKAGES[@]}"; do
     continue
   fi
   echo "==> checking ${pkg}"
-  if nix run nixpkgs#nix-update -- --flake . "$pkg"; then
+  build_flags=()
+  if [[ -n "$AUTO_BUILD" ]]; then
+    build_flags+=(--build)
+  fi
+  if nix run nixpkgs#nix-update -- -F --system "$AUTO_SYSTEM" "${build_flags[@]}" "$pkg"; then
     continue
   else
     echo "warn: ${pkg} update failed" >&2

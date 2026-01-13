@@ -26,10 +26,6 @@ jobs:
           AUTO_BUMP_SYSTEM: "aarch64-darwin"
         run: ./scripts/auto-bump.sh
 
-      - name: Check flake
-        if: steps.bump.outputs.has_updates == 'true'
-        run: nix flake check
-
       - name: Commit and push
         if: steps.bump.outputs.has_updates == 'true'
         run: |

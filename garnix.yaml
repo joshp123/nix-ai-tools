@@ -1,6 +1,3 @@
 builds:
-  include:
-    - "checks.x86_64-linux.*"
-    - "checks.x86_64-darwin.*"
-    - "checks.aarch64-linux.*"
-    - "checks.aarch64-darwin.*"
+  - include:
+      - "packages.*.*"

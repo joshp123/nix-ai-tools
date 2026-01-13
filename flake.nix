@@ -26,8 +26,7 @@
           cassPkg = if supports system "cass" then pkgs.callPackage ./pkgs/cass.nix {} else null;
           piPkg = pkgs.callPackage ./pkgs/pi-coding-agent.nix { inherit (pkgs) path; };
           pkgSet =
-            optional "ccusage" (pkgs.callPackage ./pkgs/ccusage.nix {})
-            // optional "dash-mcp-server" { dash-mcp-server = pkgs.callPackage ./pkgs/dash-mcp-server.nix {}; }
+            optional "dash-mcp-server" { dash-mcp-server = pkgs.callPackage ./pkgs/dash-mcp-server.nix {}; }
             // optional "xcodebuildmcp" { xcodebuildmcp = pkgs.callPackage ./pkgs/xcodebuildmcp.nix { nodejs = pkgs.nodejs_22; }; }
             // optional "peekaboo-cli" { peekaboo-cli = pkgs.callPackage ./pkgs/peekaboo-cli.nix {}; }
             // optional "peekaboo-mcp" { peekaboo-mcp = pkgs.callPackage ./pkgs/peekaboo-mcp.nix { nodejs = pkgs.nodejs_22; }; }
@@ -52,7 +51,6 @@
         let
           cassPkg = prev.callPackage ./pkgs/cass.nix {};
           smaugPkgs = prev.callPackage ./pkgs/smaug.nix {};
-          ccusagePkgs = prev.callPackage ./pkgs/ccusage.nix {};
         in {
           pi-coding-agent = prev.callPackage ./pkgs/pi-coding-agent.nix { inherit (prev) path; };
           oracle = prev.callPackage ./pkgs/oracle-cli.nix {};
@@ -68,8 +66,6 @@
           cm = prev.callPackage ./pkgs/cm.nix { cass = cassPkg; };
           smaug = smaugPkgs.smaug;
           smaug-clawdbot = smaugPkgs.smaug-clawdbot;
-          ccusage = ccusagePkgs.ccusage;
-          ccusage-codex = ccusagePkgs.ccusage-codex;
         };
 
       checks = forAllSystems (system: self.packages.${system});

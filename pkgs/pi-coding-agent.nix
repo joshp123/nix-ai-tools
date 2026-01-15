@@ -43,13 +43,13 @@ let
     [ "npm_config_offline=\"false\"" ]
     (builtins.readFile "${path}/pkgs/build-support/node/build-npm-package/hooks/npm-config-hook.sh")
   ));
-  version = "0.45.7";
-  piNpmDepsHash = "sha256-5+gAMRW41SEsQUC80YApbc8D0MotEtiQ9au7xrg775E=";
+  version = "0.46.0";
+  piNpmDepsHash = "sha256-Zj/MAolUojenHgl4jzOz9vcomwI0u2fD3FPYAjHYgn4=";
   src = fetchFromGitHub {
     owner = "badlogic";
     repo = "pi-mono";
     rev = "v${version}";
-    hash = "sha256-NvtiO8b22BOMjAcj+bNtvhWZNva6KM/1GNCNjet6dIE=";
+    hash = "sha256-1+LerPxXSRHKHc+xWAZDmTavEtyOgd8Vx2b3vUaJ57I=";
   };
 in
 buildNpmPackage {

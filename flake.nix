@@ -65,7 +65,7 @@
           cass = cassPkg;
           cm = prev.callPackage ./pkgs/cm.nix { cass = cassPkg; };
           smaug = smaugPkgs.smaug;
-          smaug-clawdbot = smaugPkgs.smaug-clawdbot;
+          smaug-moltbot = smaugPkgs.smaug-moltbot;
         };
 
       checks = forAllSystems (system: self.packages.${system});

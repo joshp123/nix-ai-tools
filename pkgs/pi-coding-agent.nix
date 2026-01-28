@@ -46,7 +46,7 @@ let
   version = "0.50.1";
   piNpmDepsHash = "sha256-p7A8a7SlPbm32dsJmO4WbefRWIAiJAPutbrzSwDNjP0=";
   src = fetchFromGitHub {
-    owner = "joshp123";
+    owner = "badlogic";
     repo = "pi-mono";
     rev = "v${version}";
     hash = "sha256-c+Utd/0CY+iXFr8ICgvEtLmrXb3HVXzscWOitbOFipY=";

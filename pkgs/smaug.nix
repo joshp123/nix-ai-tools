@@ -12,7 +12,7 @@ let
     hash = "sha256-m7J05ha6A4B7i/Emv0r1t4AEUk6Cx1W/L41NpSeebQE=";
   };
   smaugRoot = "$HOME/code/knowledge/twitter-bookmarks";
-  smaugLink = "$HOME/.clawdbot/workspace/bookmarks/smaug";
+  smaugLink = "$HOME/.moltbot/workspace/bookmarks/smaug";
 
   smaug = stdenv.mkDerivation (finalAttrs: {
     pname = "smaug";
@@ -43,14 +43,14 @@ let
     };
   });
 
-  smaug-clawdbot = stdenv.mkDerivation {
-    name = "smaug-clawdbot";
+  smaug-moltbot = stdenv.mkDerivation {
+    name = "smaug-moltbot";
     dontUnpack = true;
     dontBuild = true;
     installPhase = ''
       runHook preInstall
       mkdir -p "$out/bin"
-      cat > "$out/bin/smaug-clawdbot" <<'SCRIPT'
+      cat > "$out/bin/smaug-moltbot" <<'SCRIPT'
 #!/usr/bin/env bash
 set -euo pipefail
 PATH="${git}/bin:$PATH"
@@ -58,7 +58,7 @@ PATH="${git}/bin:$PATH"
 root="${""}"{SMAUG_ROOT:-${smaugRoot}}"
 link="${""}"{SMAUG_LINK:-${smaugLink}}"
 
-creds_file="$HOME/.clawdbot/credentials/smaug.env"
+creds_file="$HOME/.moltbot/credentials/smaug.env"
 if [ -f "$creds_file" ]; then
   set -a
   # shellcheck disable=SC1090
@@ -70,7 +70,7 @@ mkdir -p "$root/.state" "$root/knowledge/tools" "$root/knowledge/articles" "$roo
 
 if [ ! -L "$link" ]; then
   if [ -e "$link" ]; then
-    echo "smaug-clawdbot: $link exists and is not a symlink" >&2
+    echo "smaug-moltbot: $link exists and is not a symlink" >&2
     exit 1
   fi
   mkdir -p "$(dirname "$link")"
@@ -92,17 +92,17 @@ export PROJECT_ROOT="$root"
 cd "$root"
 exec ${smaug}/bin/smaug "$@"
 SCRIPT
-      chmod +x "$out/bin/smaug-clawdbot"
+      chmod +x "$out/bin/smaug-moltbot"
       runHook postInstall
     '';
 
     meta = with lib; {
-      description = "Wrapper for running smaug with Clawdbot paths";
+      description = "Wrapper for running smaug with Moltbot paths";
       platforms = platforms.unix;
-      mainProgram = "smaug-clawdbot";
+      mainProgram = "smaug-moltbot";
     };
   };
 
 in {
-  inherit smaug smaug-clawdbot;
+  inherit smaug smaug-moltbot;
 }

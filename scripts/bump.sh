@@ -9,4 +9,4 @@ fi
 package="$1"
 shift || true
 
-nix run nixpkgs#nix-update -- -F "$@" "$package"
+nix run nixpkgs#nix-update -- --flake . "$package" "$@"

@@ -43,15 +43,13 @@ let
     [ "npm_config_offline=\"false\"" ]
     (builtins.readFile "${path}/pkgs/build-support/node/build-npm-package/hooks/npm-config-hook.sh")
   ));
-  rev = "4dbf094b65ae696ef359e99037e2a761ae8e0441";
-  shortRev = builtins.substring 0 7 rev;
-  version = "unstable-${shortRev}";
-  piNpmDepsHash = "sha256-T1b1mvNYAYtYdUQ78x24RNgRNoBnm5qKRsKMcOAILr0=";
+  version = "0.50.1";
+  piNpmDepsHash = "sha256-p7A8a7SlPbm32dsJmO4WbefRWIAiJAPutbrzSwDNjP0=";
   src = fetchFromGitHub {
     owner = "joshp123";
     repo = "pi-mono";
-    rev = rev;
-    hash = "sha256-asytIxinVRqnnYTe4PrgrkDp4V8oHUeAUHVPiI1+Vcs=";
+    rev = "v${version}";
+    hash = "sha256-c+Utd/0CY+iXFr8ICgvEtLmrXb3HVXzscWOitbOFipY=";
   };
 in
 buildNpmPackage {

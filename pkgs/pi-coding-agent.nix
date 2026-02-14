@@ -75,19 +75,7 @@ buildNpmPackage {
   buildInputs = [ cairo freetype fontconfig giflib libjpeg libpng pango pixman ];
 
   preBuild = ''
-    python3 - <<'PY'
-import json
-from pathlib import Path
-
-path = Path("packages/ai/package.json")
-data = json.loads(path.read_text())
-scripts = data.get("scripts", {})
-build = scripts.get("build", "")
-if "generate-models" in build:
-    scripts["build"] = "tsgo -p tsconfig.build.json"
-    data["scripts"] = scripts
-    path.write_text(json.dumps(data, indent=2))
-PY
+    python3 ${./pi-coding-agent/prepare-ai-build.py}
     npm run build -w @mariozechner/pi-tui
     npm run build -w @mariozechner/pi-ai
     npm run build -w @mariozechner/pi-agent-core

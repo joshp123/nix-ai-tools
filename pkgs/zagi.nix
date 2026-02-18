@@ -1,11 +1,11 @@
 { lib, stdenv, fetchurl }:
 
 let
-  version = "0.1.7";
+  version = "0.1.8";
   sources = {
     "aarch64-darwin" = {
       url = "https://github.com/mattzcarey/zagi/releases/download/v${version}/zagi-macos-aarch64.tar.gz";
-      hash = "sha256-o44kYk1JcMwDjfhhcV4hLE5PwYM5t7kJwpJXpOuqgdg=";
+      hash = "sha256-gcfibTpUoFdSDt4PdPw90OHoiV1dy7MU9quVtTA5bv0=";
     };
     "x86_64-darwin" = {
       url = "https://github.com/mattzcarey/zagi/releases/download/v${version}/zagi-macos-x86_64.tar.gz";

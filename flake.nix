@@ -35,6 +35,7 @@
             // optional "nanobanana" { nanobanana = pkgs.callPackage ./pkgs/nanobanana.nix {}; }
             // optional "smaug" (pkgs.callPackage ./pkgs/smaug.nix {})
             // optional "pi-coding-agent" { pi-coding-agent = piPkg; }
+            // optional "pi-autoresearch" { pi-autoresearch = pkgs.callPackage ./pkgs/pi-autoresearch.nix {}; }
             // optional "ubs" { ubs = pkgs.callPackage ./pkgs/ubs.nix {}; }
             // optional "cass" (if cassPkg != null then { cass = cassPkg; } else {})
             // optional "cm" (if cassPkg != null then { cm = pkgs.callPackage ./pkgs/cm.nix { cass = cassPkg; }; } else {})
@@ -53,6 +54,7 @@
           smaugPkgs = prev.callPackage ./pkgs/smaug.nix {};
         in {
           pi-coding-agent = prev.callPackage ./pkgs/pi-coding-agent.nix { inherit (prev) path; };
+          pi-autoresearch = prev.callPackage ./pkgs/pi-autoresearch.nix {};
           oracle = prev.callPackage ./pkgs/oracle-cli.nix {};
           dash-mcp-server = prev.callPackage ./pkgs/dash-mcp-server.nix {};
           xcodebuildmcp = prev.callPackage ./pkgs/xcodebuildmcp.nix { nodejs = prev.nodejs_22; };

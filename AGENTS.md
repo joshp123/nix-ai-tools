@@ -2,6 +2,21 @@
 
 Nix packages for fast-moving AI tools. Auto-bumped hourly via CI.
 
+Consumer default lives in `~/code/nix/nixos-config` and should use the published GitHub input, not a tracked local path override:
+
+```bash
+cd ~/code/nix/nixos-config
+nix flake lock --update-input nix-ai-tools
+```
+
+For local unpublished testing from this checkout, use one-off overrides instead of changing tracked inputs:
+
+```bash
+cd ~/code/nix/nixos-config
+nix run .#build --override-input nix-ai-tools path:/Users/josh/code/nix/nix-ai-tools
+nix run .#build-switch --override-input nix-ai-tools path:/Users/josh/code/nix/nix-ai-tools
+```
+
 ## Golden path: add new package
 
 1. Create `pkgs/<name>.nix`

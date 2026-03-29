@@ -24,9 +24,14 @@
           system = pkgs.stdenv.hostPlatform.system;
           optional = name: value: lib.optionalAttrs (supports system name) value;
           cassPkg = if supports system "cass" then pkgs.callPackage ./pkgs/cass.nix {} else null;
+          markitdownBasePkg = pkgs.callPackage ./pkgs/markitdown-base.nix {};
+          markitdownOcrPkg = pkgs.callPackage ./pkgs/markitdown-ocr.nix { markitdown-base = markitdownBasePkg; };
           piPkg = pkgs.callPackage ./pkgs/pi-coding-agent.nix { inherit (pkgs) path; };
           pkgSet =
             optional "dash-mcp-server" { dash-mcp-server = pkgs.callPackage ./pkgs/dash-mcp-server.nix {}; }
+            // optional "markit" { markit = pkgs.callPackage ./pkgs/markit.nix { nodejs = pkgs.nodejs_22; }; }
+            // optional "markitdown" { markitdown = pkgs.callPackage ./pkgs/markitdown.nix { markitdown-base = markitdownBasePkg; markitdown-ocr = markitdownOcrPkg; }; }
+            // optional "markitdown-ocr" { markitdown-ocr = markitdownOcrPkg; }
             // optional "xcodebuildmcp" { xcodebuildmcp = pkgs.callPackage ./pkgs/xcodebuildmcp.nix { nodejs = pkgs.nodejs_22; }; }
             // optional "peekaboo-cli" { peekaboo-cli = pkgs.callPackage ./pkgs/peekaboo-cli.nix {}; }
             // optional "peekaboo-mcp" { peekaboo-mcp = pkgs.callPackage ./pkgs/peekaboo-mcp.nix { nodejs = pkgs.nodejs_22; }; }
@@ -51,12 +56,17 @@
       overlays.default = final: prev:
         let
           cassPkg = prev.callPackage ./pkgs/cass.nix {};
+          markitdownBasePkg = prev.callPackage ./pkgs/markitdown-base.nix {};
+          markitdownOcrPkg = prev.callPackage ./pkgs/markitdown-ocr.nix { markitdown-base = markitdownBasePkg; };
           smaugPkgs = prev.callPackage ./pkgs/smaug.nix {};
         in {
           pi-coding-agent = prev.callPackage ./pkgs/pi-coding-agent.nix { inherit (prev) path; };
           pi-autoresearch = prev.callPackage ./pkgs/pi-autoresearch.nix {};
           oracle = prev.callPackage ./pkgs/oracle-cli.nix {};
           dash-mcp-server = prev.callPackage ./pkgs/dash-mcp-server.nix {};
+          markit = prev.callPackage ./pkgs/markit.nix { nodejs = prev.nodejs_22; };
+          markitdown = prev.callPackage ./pkgs/markitdown.nix { markitdown-base = markitdownBasePkg; markitdown-ocr = markitdownOcrPkg; };
+          markitdown-ocr = markitdownOcrPkg;
           xcodebuildmcp = prev.callPackage ./pkgs/xcodebuildmcp.nix { nodejs = prev.nodejs_22; };
           spogo = prev.callPackage ./pkgs/spogo.nix {};
           nanobanana = prev.callPackage ./pkgs/nanobanana.nix {};

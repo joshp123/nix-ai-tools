@@ -1,12 +1,12 @@
 { lib, buildNpmPackage, fetchFromGitHub, nodejs }:
 
 let
-  version = "0.3.0";
+  version = "0.4.0";
   src = fetchFromGitHub {
     owner = "Michaelliv";
     repo = "markit";
     rev = "v${version}";
-    hash = "sha256-3NjsVUCxrb0DNt6wShzBXW1PdwvEWotnXNvlGGdS5jc=";
+    hash = "sha256-51oBBfmjxwJLzkjRocwtbgzTBbUtwyO4YkMTaa0UJxE=";
   };
 in
 buildNpmPackage {
@@ -16,7 +16,7 @@ buildNpmPackage {
   npmDepsHash = "sha256-+WqB0NV+d2YEHfnv2fuyMaqB3YI0vR3PcB6Bu4QUcK4=";
   npmBuildScript = "build";
 
-  # The upstream v0.3.0 tag ships an outdated package-lock.json. Use a lockfile
+  # The upstream v0.4.0 tag ships an outdated package-lock.json. Use a lockfile
   # regenerated from the tagged package.json so the build matches the published
   # CLI behavior.
   postPatch = ''

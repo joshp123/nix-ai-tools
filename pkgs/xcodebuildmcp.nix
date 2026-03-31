@@ -1,13 +1,13 @@
 { lib, buildNpmPackage, fetchFromGitHub, nodejs }:
 
 let
-  version = "2.3.1";
-  npmDepsHash = "sha256-YQNB46vnhcc5PV3ILKr22UDfi4uB/+85FHMYb8jlwuM=";
+  version = "2.3.2";
+  npmDepsHash = "sha256-jgvxXxvmdMr/qK3iGPAF/fjo2ob5aKIlXXJbRqDVOCI=";
   src = fetchFromGitHub {
     owner = "cameroncooke";
     repo = "XcodeBuildMCP";
     rev = "v${version}";
-    hash = "sha256-6yIsn7uxGGyRh3a73Mfj8Nt5oRlm4W6VmsilMlqMPDk=";
+    hash = "sha256-RHg5uIWpNwqGvd9LuVO7zBt6hgSZWb1KSHcslt1mgJQ=";
   };
   env = {
     CI = "1";

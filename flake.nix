@@ -13,6 +13,7 @@
       inherit (helpers) systems forAllSystems;
 
       packageSystems = {
+        codex-lb = [ "aarch64-darwin" "x86_64-darwin" ];
         peekaboo-cli = [ "aarch64-darwin" "x86_64-darwin" ];
         peekaboo-mcp = [ "aarch64-darwin" "x86_64-darwin" ];
         qmd = [ "aarch64-darwin" "x86_64-darwin" ];
@@ -48,6 +49,7 @@
             // optional "ubs" { ubs = pkgs.callPackage ./pkgs/ubs.nix {}; }
             // optional "cass" (if cassPkg != null then { cass = cassPkg; } else {})
             // optional "cm" (if cassPkg != null then { cm = pkgs.callPackage ./pkgs/cm.nix { cass = cassPkg; }; } else {})
+            // optional "codex-lb" { codex-lb = pkgs.callPackage ./pkgs/codex-lb.nix {}; }
             // optional "zagi" { zagi = pkgs.callPackage ./pkgs/zagi.nix {}; }
             // { default = piPkg; };
         in lib.removeAttrs pkgSet [ "override" "overrideDerivation" ];
@@ -89,6 +91,7 @@
           peekaboo-mcp = prev.callPackage ./pkgs/peekaboo-mcp.nix { nodejs = prev.nodejs_22; };
           cass = cassPkg;
           cm = prev.callPackage ./pkgs/cm.nix { cass = cassPkg; };
+          codex-lb = prev.callPackage ./pkgs/codex-lb.nix {};
           smaug = smaugPkgs.smaug;
           smaug-moltbot = smaugPkgs.smaug-moltbot;
         };

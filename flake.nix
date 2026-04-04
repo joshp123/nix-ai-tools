@@ -13,6 +13,7 @@
       inherit (helpers) systems forAllSystems;
 
       packageSystems = {
+        lexcite = [ "aarch64-darwin" "x86_64-darwin" ];
         codex-lb = [ "aarch64-darwin" "x86_64-darwin" ];
         peekaboo-cli = [ "aarch64-darwin" "x86_64-darwin" ];
         peekaboo-mcp = [ "aarch64-darwin" "x86_64-darwin" ];
@@ -39,6 +40,7 @@
             // optional "peekaboo-cli" { peekaboo-cli = pkgs.callPackage ./pkgs/peekaboo-cli.nix {}; }
             // optional "peekaboo-mcp" { peekaboo-mcp = pkgs.callPackage ./pkgs/peekaboo-mcp.nix { nodejs = pkgs.nodejs_22; }; }
             // optional "spogo" { spogo = pkgs.callPackage ./pkgs/spogo.nix {}; }
+            // optional "lexcite" { lexcite = pkgs.callPackage ./pkgs/lexcite.nix {}; }
             // optional "oracle" { oracle = pkgs.callPackage ./pkgs/oracle-cli.nix {}; }
             // optional "nanobanana" { nanobanana = pkgs.callPackage ./pkgs/nanobanana.nix {}; }
             // optional "smaug" (pkgs.callPackage ./pkgs/smaug.nix {})
@@ -83,6 +85,7 @@
           markitdown-ocr = markitdownOcrPkg;
           xcodebuildmcp = prev.callPackage ./pkgs/xcodebuildmcp.nix { nodejs = prev.nodejs_22; };
           spogo = prev.callPackage ./pkgs/spogo.nix {};
+          lexcite = prev.callPackage ./pkgs/lexcite.nix {};
           nanobanana = prev.callPackage ./pkgs/nanobanana.nix {};
           ubs = prev.callPackage ./pkgs/ubs.nix {};
           zagi = prev.callPackage ./pkgs/zagi.nix {};

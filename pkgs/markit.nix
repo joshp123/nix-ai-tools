@@ -1,7 +1,7 @@
 { lib, buildNpmPackage, fetchFromGitHub, nodejs }:
 
 let
-  version = "test-fixtures-v1";
+  version = "0.5.0";
   src = fetchFromGitHub {
     owner = "Michaelliv";
     repo = "markit";

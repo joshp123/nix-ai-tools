@@ -1,12 +1,12 @@
 { lib, buildNpmPackage, fetchFromGitHub, nodejs }:
 
 let
-  version = "test-fixtures-v1";
+  version = "0.5.1";
   src = fetchFromGitHub {
     owner = "Michaelliv";
     repo = "markit";
     rev = "v${version}";
-    hash = "sha256-prSnyyXJDpyFZiPBMeQfyxhWLvHKvzsMiyq/uX/8dHY=";
+    hash = "sha256-knHNJ9nsL6DqyUcVVJ9+KrDYLtiiKJIqF48nAQhBcxo=";
   };
 in
 buildNpmPackage {

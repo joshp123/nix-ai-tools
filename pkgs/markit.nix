@@ -1,12 +1,12 @@
 { lib, buildNpmPackage, fetchFromGitHub, nodejs }:
 
 let
-  version = "0.5.1";
+  version = "0.5.2";
   src = fetchFromGitHub {
     owner = "Michaelliv";
     repo = "markit";
     rev = "v${version}";
-    hash = "sha256-knHNJ9nsL6DqyUcVVJ9+KrDYLtiiKJIqF48nAQhBcxo=";
+    hash = "sha256-0psdtEZz4xbb+fta4R7yTWALjsGrKEH+r9H0qaIZUVg=";
   };
 in
 buildNpmPackage {

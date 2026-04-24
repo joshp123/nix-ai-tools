@@ -5,7 +5,7 @@ DEFAULT_PACKAGES=(
   codex-lb
   dash-mcp-server
   markit
-  markitdown
+  markitdown-base
   markitdown-ocr
   peekaboo-cli
   peekaboo-mcp
@@ -41,6 +41,7 @@ else
 fi
 
 updated=0
+failed=0
 for pkg in "${PACKAGES[@]}"; do
   if [[ -z "$pkg" ]]; then
     continue
@@ -55,6 +56,15 @@ for pkg in "${PACKAGES[@]}"; do
     codex-lb)
       update_flags+=(--version "$(latest_pypi_version codex-lb)")
       ;;
+    dash-mcp-server)
+      update_flags+=(--version branch)
+      ;;
+    markitdown-base)
+      update_flags+=(--version "$(latest_pypi_version markitdown)")
+      ;;
+    markitdown-ocr)
+      update_flags+=(--version "$(latest_pypi_version markitdown-ocr)")
+      ;;
     pi-autoresearch|ubs)
       update_flags+=(--version branch)
       ;;
@@ -63,10 +73,20 @@ for pkg in "${PACKAGES[@]}"; do
       ;;
   esac
 
-  if nix run nixpkgs#nix-update -- -F --system "$AUTO_SYSTEM" "${build_flags[@]}" "${update_flags[@]}" "$pkg"; then
+  command=(nix run nixpkgs#nix-update -- -F --system "$AUTO_SYSTEM")
+  if [[ ${#build_flags[@]} -gt 0 ]]; then
+    command+=("${build_flags[@]}")
+  fi
+  if [[ ${#update_flags[@]} -gt 0 ]]; then
+    command+=("${update_flags[@]}")
+  fi
+  command+=("$pkg")
+
+  if "${command[@]}"; then
     continue
   else
     echo "warn: ${pkg} update failed" >&2
+    failed=1
   fi
 done
 
@@ -86,4 +106,8 @@ if [[ $updated -eq 1 ]]; then
   echo "updates found"
 else
   echo "no updates"
+fi
+
+if [[ $failed -eq 1 ]]; then
+  exit 1
 fi

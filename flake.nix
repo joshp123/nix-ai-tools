@@ -34,6 +34,7 @@
           pkgSet =
             optional "dash-mcp-server" { dash-mcp-server = pkgs.callPackage ./pkgs/dash-mcp-server.nix {}; }
             // optional "markit" { markit = pkgs.callPackage ./pkgs/markit.nix { nodejs = pkgs.nodejs_22; }; }
+            // optional "markitdown-base" { markitdown-base = markitdownBasePkg; }
             // optional "markitdown" { markitdown = pkgs.callPackage ./pkgs/markitdown.nix { markitdown-base = markitdownBasePkg; markitdown-ocr = markitdownOcrPkg; }; }
             // optional "markitdown-ocr" { markitdown-ocr = markitdownOcrPkg; }
             // optional "xcodebuildmcp" { xcodebuildmcp = pkgs.callPackage ./pkgs/xcodebuildmcp.nix { nodejs = pkgs.nodejs_22; }; }
@@ -81,6 +82,7 @@
           oracle = prev.callPackage ./pkgs/oracle-cli.nix {};
           dash-mcp-server = prev.callPackage ./pkgs/dash-mcp-server.nix {};
           markit = prev.callPackage ./pkgs/markit.nix { nodejs = prev.nodejs_22; };
+          markitdown-base = markitdownBasePkg;
           markitdown = prev.callPackage ./pkgs/markitdown.nix { markitdown-base = markitdownBasePkg; markitdown-ocr = markitdownOcrPkg; };
           markitdown-ocr = markitdownOcrPkg;
           xcodebuildmcp = prev.callPackage ./pkgs/xcodebuildmcp.nix { nodejs = prev.nodejs_22; };

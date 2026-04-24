@@ -4,13 +4,13 @@ let
   src = fetchFromGitHub {
     owner = "joshp123";
     repo = "dash-mcp-server";
-    rev = "c92ebc42c31158729ae7acc4abef1fdf9eae0893";
-    hash = "sha256-Ryh0VCjsXnjl4+o0MaJOsr2j3rkc6UBJE5Q/IlJB+aI=";
+    rev = "e64d58c82879ea8bdbc8f1bad5b07615f446357c";
+    hash = "sha256-7R46GdhuP3DuABIqm/Ch5m0psTdxVw4jIKNPC3pRTVc=";
   };
 in
 python3Packages.buildPythonApplication {
   pname = "dash-mcp-server";
-  version = "1.0.0";
+  version = "0-unstable-2025-09-01";
   inherit src;
   pyproject = true;
   nativeBuildInputs = [ python3Packages.hatchling ];

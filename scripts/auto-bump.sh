@@ -36,7 +36,25 @@ PY
 }
 
 run_with_timeout() {
-  perl -e 'alarm shift; exec @ARGV' "$AUTO_TIMEOUT_SECONDS" "$@"
+  "$@" &
+  local pid=$!
+
+  (
+    sleep "$AUTO_TIMEOUT_SECONDS"
+    if kill -0 "$pid" 2>/dev/null; then
+      echo "error: command timed out after ${AUTO_TIMEOUT_SECONDS}s: $*" >&2
+      kill "$pid" 2>/dev/null || true
+      sleep 5
+      kill -9 "$pid" 2>/dev/null || true
+    fi
+  ) &
+  local watchdog=$!
+
+  local status=0
+  wait "$pid" || status=$?
+  kill "$watchdog" 2>/dev/null || true
+  wait "$watchdog" 2>/dev/null || true
+  return "$status"
 }
 
 if [[ $# -gt 0 ]]; then

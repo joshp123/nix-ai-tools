@@ -1,9 +1,39 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-DEFAULT_PACKAGES=(peekaboo-cli peekaboo-mcp oracle qmd spogo dash-mcp-server markit markitdown markitdown-ocr xcodebuildmcp zagi pi-coding-agent pi-diff-review)
+DEFAULT_PACKAGES=(
+  codex-lb
+  dash-mcp-server
+  markit
+  markitdown
+  markitdown-ocr
+  peekaboo-cli
+  peekaboo-mcp
+  pi-autoresearch
+  pi-coding-agent
+  pi-diff-review
+  qmd
+  smaug
+  spogo
+  ubs
+  xcodebuildmcp
+  zagi
+)
 AUTO_SYSTEM=${AUTO_BUMP_SYSTEM:-aarch64-darwin}
 AUTO_BUILD=${AUTO_BUMP_BUILD:-}
+
+latest_pypi_version() {
+  python3 - "$1" <<'PY'
+import json
+import sys
+import urllib.request
+
+package = sys.argv[1]
+with urllib.request.urlopen(f"https://pypi.org/pypi/{package}/json") as response:
+    print(json.load(response)["info"]["version"])
+PY
+}
+
 if [[ $# -gt 0 ]]; then
   PACKAGES=("$@")
 else
@@ -20,7 +50,20 @@ for pkg in "${PACKAGES[@]}"; do
   if [[ -n "$AUTO_BUILD" ]]; then
     build_flags+=(--build)
   fi
-  if nix run nixpkgs#nix-update -- -F --system "$AUTO_SYSTEM" "${build_flags[@]}" "$pkg"; then
+  update_flags=()
+  case "$pkg" in
+    codex-lb)
+      update_flags+=(--version "$(latest_pypi_version codex-lb)")
+      ;;
+    pi-autoresearch|ubs)
+      update_flags+=(--version branch)
+      ;;
+    qmd)
+      update_flags+=(--override-filename pkgs/qmd.nix)
+      ;;
+  esac
+
+  if nix run nixpkgs#nix-update -- -F --system "$AUTO_SYSTEM" "${build_flags[@]}" "${update_flags[@]}" "$pkg"; then
     continue
   else
     echo "warn: ${pkg} update failed" >&2

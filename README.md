@@ -32,3 +32,5 @@ outputs = { self, nixpkgs, nix-ai-tools, ... }: {
 
 - **Garnix** builds all packages for macOS (arm64) and Linux (x86_64, arm64)
 - **Auto-bump** workflow checks upstream hourly and pushes commits when versions move
+- `scripts/auto-bump.sh` covers packages that `nix-update` can safely bump.
+  `oracle` needs a targeted pnpm packaging fix before re-enabling auto-bumps; `cass` is intentionally pinned before a known-broken upstream change.

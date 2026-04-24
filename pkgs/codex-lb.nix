@@ -1,4 +1,4 @@
-{ fetchurl
+{ fetchPypi
 , lib
 , makeWrapper
 , python3Packages
@@ -6,12 +6,15 @@
 
 python3Packages.buildPythonApplication rec {
   pname = "codex-lb";
-  version = "1.10.1";
+  version = "1.15.0";
   format = "wheel";
 
-  src = fetchurl {
-    url = "https://files.pythonhosted.org/packages/18/47/bf8a5fa7d129901606cf8e53901cdade750b2a475f61d313050814346588/codex_lb-1.10.1-py3-none-any.whl";
-    hash = "sha256-9ttVfZ/e6fbQFigHveON7A09EI0J6ZyJjMkaAjXJB0c=";
+  src = fetchPypi {
+    pname = "codex_lb";
+    inherit version format;
+    dist = "py3";
+    python = "py3";
+    hash = "sha256-FLp9IQWDZLGWbcefn1fhSFYOICm9lkwNI+j9lVqgbPY=";
   };
 
   nativeBuildInputs = [

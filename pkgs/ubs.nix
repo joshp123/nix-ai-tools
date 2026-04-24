@@ -14,14 +14,14 @@
 }:
 
 let
-  rev = "93e646243073d435890c02a5975422cc447f3fee";
+  rev = "f2decf8d12aaf6c75ad265f730754f4b9c239d1e";
   shortRev = builtins.substring 0 7 rev;
   version = "unstable-${shortRev}";
   src = fetchFromGitHub {
     owner = "Dicklesworthstone";
     repo = "ultimate_bug_scanner";
     rev = rev;
-    hash = "sha256-PvodDC00N3c7NP56XhmJcfinHGQ9RGCdIXOXN7+GMY8=";
+    hash = "sha256-3CU5CQiITnoSVjeEeWDE4qZrBL5iOIhuEFTo2zdAHwE=";
   };
 in
 stdenvNoCC.mkDerivation {

@@ -16,7 +16,7 @@ let
 
   smaug = stdenv.mkDerivation (finalAttrs: {
     pname = "smaug";
-    version = "0.1.0";
+    version = "0.3.1";
     src = smaugSrc;
 
     nativeBuildInputs = [ makeWrapper ];

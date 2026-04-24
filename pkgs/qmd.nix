@@ -6,12 +6,12 @@
 }:
 
 let
-  version = "2.0.1";
+  version = "2.1.0";
   src = fetchFromGitHub {
     owner = "tobi";
     repo = "qmd";
     rev = "v${version}";
-    hash = "sha256-UoR9iyxqbjwAbEmiC/kxS10lvdBJmDuQigS/aEgEzDs=";
+    hash = "sha256-bqIVaNRTa8H5vrw3RwsD7QdtTa0xNvRuEVzlzE1hIBQ=";
   };
   sqliteWithExtensions = sqlite.overrideAttrs (old: {
     configureFlags = (old.configureFlags or []) ++ [

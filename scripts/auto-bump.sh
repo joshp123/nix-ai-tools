@@ -21,6 +21,7 @@ DEFAULT_PACKAGES=(
 )
 AUTO_SYSTEM=${AUTO_BUMP_SYSTEM:-aarch64-darwin}
 AUTO_BUILD=${AUTO_BUMP_BUILD:-}
+AUTO_TIMEOUT_SECONDS=${AUTO_BUMP_TIMEOUT_SECONDS:-1800}
 
 latest_pypi_version() {
   python3 - "$1" <<'PY'
@@ -32,6 +33,10 @@ package = sys.argv[1]
 with urllib.request.urlopen(f"https://pypi.org/pypi/{package}/json") as response:
     print(json.load(response)["info"]["version"])
 PY
+}
+
+run_with_timeout() {
+  perl -e 'alarm shift; exec @ARGV' "$AUTO_TIMEOUT_SECONDS" "$@"
 }
 
 if [[ $# -gt 0 ]]; then
@@ -82,7 +87,7 @@ for pkg in "${PACKAGES[@]}"; do
   fi
   command+=("$pkg")
 
-  if "${command[@]}"; then
+  if run_with_timeout "${command[@]}"; then
     continue
   else
     echo "warn: ${pkg} update failed" >&2

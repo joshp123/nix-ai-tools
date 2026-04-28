@@ -4,7 +4,7 @@
 }:
 
 let
-  rev = "bd8c97da31cdb8e3a54fb5577c576f9f10bfa587";
+  rev = "3c407b25bb11814f38bdc94c9f0566d62cdd9780";
   shortRev = builtins.substring 0 7 rev;
   version = "unstable-${shortRev}";
 in
@@ -16,7 +16,7 @@ stdenvNoCC.mkDerivation {
     owner = "davebcn87";
     repo = "pi-autoresearch";
     rev = rev;
-    hash = "sha256-neMzIerafOuro0Z4PArFKOdGmWnkHH7OMwwjyqu1wYM=";
+    hash = "sha256-5c+668B4Pp6m27QLCWUPPjUDpFoZev/0yIgrnZnonjE=";
   };
 
   dontBuild = true;

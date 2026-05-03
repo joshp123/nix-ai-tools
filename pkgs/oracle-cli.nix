@@ -2,6 +2,7 @@
 , stdenv
 , fetchurl
 , fetchFromGitHub
+, fetchPnpmDeps
 , nodejs
 , pnpm
 , python3
@@ -11,25 +12,20 @@
 , zstd
 }:
 
-let
-  # Use pnpm.fetchDeps directly from the pnpm package
-  pnpmFetchDeps = pnpm.fetchDeps;
-  pnpmConfigHook = pnpm.configHook;
-in
 stdenv.mkDerivation (finalAttrs: {
   pname = "oracle";
-  version = "0.8.4";
+  version = "0.9.0";
 
   srcTarball = fetchurl {
     url = "https://github.com/steipete/oracle/releases/download/v${finalAttrs.version}/oracle-${finalAttrs.version}.tgz";
-    hash = "sha256-wE4nwQIHBmJFT+WOiwFU3SIXd918X7DkjMt2rOG2mFU=";
+    hash = "sha256-gnD08v5Fk/7ezI7H3FpAcMBljNP/yCNE7nuPk8F+16Q=";
   };
 
   lockSrc = fetchFromGitHub {
     owner = "steipete";
     repo = "oracle";
     rev = "v${finalAttrs.version}";
-    hash = "sha256-7SSlMbp0se1+4gg9IDt06ASyfCgvgF2fZDqFPl88EHc=";
+    hash = "sha256-3IrB4T15WGd6HYPbezgM6iovxGgih3m/sfQMG1kTkNg=";
   };
 
   srcPatched = stdenv.mkDerivation {
@@ -66,11 +62,11 @@ PY
 
   src = finalAttrs.srcPatched;
 
-  pnpmDeps = pnpmFetchDeps {
+  pnpmDeps = fetchPnpmDeps {
     pname = finalAttrs.pname;
     version = finalAttrs.version;
     src = finalAttrs.srcPatched;
-    hash = "sha256-7q5lStI8gfrz6+X4U1ONm3CBufGDVDr/w/aRGMeK88A=";
+    hash = "sha256-DYhO67rW3BYgIc8Oji7rM4+uTZIcwlbKZMkkxAeO2tc=";
     fetcherVersion = 3;
   };
 

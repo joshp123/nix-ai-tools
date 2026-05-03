@@ -15,8 +15,10 @@
       packageSystems = {
         lexcite = [ "aarch64-darwin" "x86_64-darwin" ];
         codex-lb = [ "aarch64-darwin" "x86_64-darwin" ];
-        peekaboo-cli = [ "aarch64-darwin" "x86_64-darwin" ];
-        peekaboo-mcp = [ "aarch64-darwin" "x86_64-darwin" ];
+        peekaboo-cli = [ "aarch64-darwin" ];
+        peekaboo-mcp = [ "aarch64-darwin" ];
+        cass = [ "aarch64-darwin" "x86_64-linux" "aarch64-linux" ];
+        cm = [ "aarch64-darwin" "x86_64-linux" "aarch64-linux" ];
         qmd = [ "aarch64-darwin" "x86_64-darwin" ];
         zagi = systems;
       };

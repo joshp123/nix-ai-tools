@@ -1,29 +1,38 @@
-{ lib, buildNpmPackage, fetchFromGitHub, nodejs }:
+{ lib, stdenv, fetchurl, makeWrapper, nodejs }:
 
-let
-  version = "2.0.3";
-  src = fetchFromGitHub {
-    owner = "steipete";
-    repo = "peekaboo";
-    rev = "v${version}";
-    hash = "sha256-U1XtM/xtTNtPXe2E8mWSWe5+zPUKeEY3WN7vRACjwjQ=";
-  };
-in
-buildNpmPackage {
+stdenv.mkDerivation rec {
   pname = "peekaboo-mcp";
-  inherit version src;
+  version = "3.0.0-beta4";
 
-  npmDepsHash = "sha256-wMzz3lUFgDC8an+QXVDArr1ylHYVOYEFbm98qqvEdZc=";
-  npmBuildScript = "build";
-  inherit nodejs;
+  src = fetchurl {
+    url = "https://github.com/steipete/Peekaboo/releases/download/v${version}/steipete-peekaboo-${version}.tgz";
+    hash = "sha256-Gq3wlx1Zo9fAc1z7VRd1F9aP9U+KKI2yiOXKKdUUGqk=";
+  };
 
-  env = { CI = "1"; };
+  dontConfigure = true;
+  dontBuild = true;
+
+  unpackPhase = ''
+    tar -xzf "$src"
+  '';
+
+  installPhase = ''
+    runHook preInstall
+    mkdir -p "$out/libexec/peekaboo-mcp" "$out/bin"
+    cp -R package/. "$out/libexec/peekaboo-mcp/"
+    chmod 0755 "$out/libexec/peekaboo-mcp/peekaboo" "$out/libexec/peekaboo-mcp/peekaboo-mcp.js"
+    makeWrapper ${nodejs}/bin/node "$out/bin/peekaboo-mcp" \
+      --add-flags "$out/libexec/peekaboo-mcp/peekaboo-mcp.js"
+    runHook postInstall
+  '';
+
+  nativeBuildInputs = [ makeWrapper ];
 
   meta = with lib; {
     description = "Peekaboo MCP server for macOS automation";
     homepage = "https://github.com/steipete/peekaboo";
     license = licenses.mit;
-    platforms = platforms.darwin;
+    platforms = [ "aarch64-darwin" ];
     mainProgram = "peekaboo-mcp";
   };
 }

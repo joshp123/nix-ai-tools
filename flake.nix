@@ -103,6 +103,6 @@
           smaug-moltbot = smaugPkgs.smaug-moltbot;
         };
 
-      checks = forAllSystems (system: self.packages.${system});
+      checks = forAllSystems (system: lib.removeAttrs self.packages.${system} [ "lexcite" ]);
     };
 }

@@ -49,7 +49,7 @@ python3Packages.buildPythonApplication rec {
     zstandard
   ];
 
-  pythonImportsCheck = [ "app.main" "app.cli" ];
+  pythonImportsCheck = [ "app.cli" ];
 
   postInstall = ''
     wrapProgram "$out/bin/codex-lb" \

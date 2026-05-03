@@ -4,9 +4,7 @@
 }:
 
 let
-  rev = "376ccc62d88345e84d524486699378eaf006f838";
-  shortRev = builtins.substring 0 7 rev;
-  version = "unstable-${shortRev}";
+  version = "1.3.0";
 in
 stdenvNoCC.mkDerivation {
   pname = "pi-autoresearch";
@@ -15,7 +13,7 @@ stdenvNoCC.mkDerivation {
   src = fetchFromGitHub {
     owner = "davebcn87";
     repo = "pi-autoresearch";
-    rev = rev;
+    rev = "v${version}";
     hash = "sha256-L7vldl+blfSkJjCn2mbhcAc6JQxESIkcoe9SitcPrEE=";
   };
 

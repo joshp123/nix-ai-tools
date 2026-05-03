@@ -2,7 +2,6 @@
 set -euo pipefail
 
 DEFAULT_PACKAGES=(
-  codex-lb
   dash-mcp-server
   markit
   markitdown-base
@@ -11,11 +10,8 @@ DEFAULT_PACKAGES=(
   pi-coding-agent
   pi-diff-review
   qmd
-  smaug
   spogo
-  ubs
   xcodebuildmcp
-  zagi
 )
 AUTO_SYSTEM=${AUTO_BUMP_SYSTEM:-aarch64-darwin}
 AUTO_BUILD=${AUTO_BUMP_BUILD:-}
@@ -74,9 +70,6 @@ for pkg in "${PACKAGES[@]}"; do
   fi
   update_flags=()
   case "$pkg" in
-    codex-lb)
-      update_flags+=(--version "$(latest_pypi_version codex-lb)")
-      ;;
     dash-mcp-server)
       update_flags+=(--version branch)
       ;;
@@ -85,9 +78,6 @@ for pkg in "${PACKAGES[@]}"; do
       ;;
     markitdown-ocr)
       update_flags+=(--version "$(latest_pypi_version markitdown-ocr)")
-      ;;
-    pi-autoresearch|ubs)
-      update_flags+=(--version branch)
       ;;
     qmd)
       update_flags+=(--override-filename pkgs/qmd.nix)

@@ -33,4 +33,4 @@ outputs = { self, nixpkgs, nix-ai-tools, ... }: {
 - **Garnix** builds all packages for macOS (arm64) and Linux (x86_64, arm64)
 - **Auto-bump** workflow checks upstream hourly and pushes commits when versions move
 - `scripts/auto-bump.sh` covers packages that `nix-update` can safely bump.
-  `oracle` and `cass` need manual hash updates, so they stay out of auto-bumps.
+  `oracle`, `cass`, and Peekaboo v3 beta artifacts need manual hash updates, so they stay out of auto-bumps.

@@ -7,8 +7,6 @@ DEFAULT_PACKAGES=(
   markit
   markitdown-base
   markitdown-ocr
-  peekaboo-cli
-  peekaboo-mcp
   pi-autoresearch
   pi-coding-agent
   pi-diff-review

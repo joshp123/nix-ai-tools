@@ -4,8 +4,8 @@ let
   smaugSrc = fetchFromGitHub {
     owner = "alexknowshtml";
     repo = "smaug";
-    rev = "180925814bc2076091bcfe7dcbf67c20045c4c90";
-    hash = "sha256-DVQ4+zO6rtNc1XmwDCiocvo/C03NsJBa2KSga6fTRbo=";
+    rev = "v0.3.1";
+    hash = "sha256-qc2uA5m64D0De15zK67VBNXvm+JPn2atJgwMh5L8Fxg=";
   };
   dayjsSrc = fetchurl {
     url = "https://registry.npmjs.org/dayjs/-/dayjs-1.11.10.tgz";

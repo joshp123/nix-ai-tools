@@ -1,7 +1,7 @@
 { lib
 , buildNpmPackage
 , fetchFromGitHub
-, nodejs_20
+, nodejs_22
 , diffutils
 , makeSetupHook
 , writeText
@@ -24,7 +24,7 @@
 , ... }:
 
 let
-  nodejs = nodejs_20;
+  nodejs = nodejs_22;
   diffutilsNoCheck = diffutils.overrideAttrs (_: { doCheck = false; });
   piNpmConfigHook = makeSetupHook {
     name = "pi-npm-config-hook";
@@ -43,13 +43,13 @@ let
     [ "npm_config_offline=\"false\"" ]
     (builtins.readFile "${path}/pkgs/build-support/node/build-npm-package/hooks/npm-config-hook.sh")
   ));
-  version = "0.73.1";
-  piNpmDepsHash = "sha256-tneAcwtTIfkcqQ8/Ch1Xa6OiOkTjJNYbH8wfhNneT/g=";
+  version = "0.79.8";
+  piNpmDepsHash = "sha256-xrTpu4TkRmlflg7pMaw/QVsN+poQ41slVA5PET+NDoI=";
   src = fetchFromGitHub {
-    owner = "badlogic";
-    repo = "pi-mono";
+    owner = "earendil-works";
+    repo = "pi";
     rev = "v${version}";
-    hash = "sha256-ZcqMWghMACzEUswLujwClPF1pbwjTKzTbcYW86ZvjL4=";
+    hash = "sha256-eH1+vHrKBu1GcUXnTdvRtNuLuf0EdReAnFit8UqiXB4=";
   };
 in
 buildNpmPackage {
@@ -76,9 +76,9 @@ buildNpmPackage {
 
   preBuild = ''
     python3 ${./pi-coding-agent/prepare-ai-build.py}
-    npm run build -w @mariozechner/pi-tui
-    npm run build -w @mariozechner/pi-ai
-    npm run build -w @mariozechner/pi-agent-core
+    npm run build -w @earendil-works/pi-tui
+    npm run build -w @earendil-works/pi-ai
+    npm run build -w @earendil-works/pi-agent-core
   '';
 
   dontNpmInstall = true;
@@ -86,7 +86,7 @@ buildNpmPackage {
   installPhase = ''
     runHook preInstall
 
-    packageOut="$out/lib/node_modules/@mariozechner/pi-coding-agent"
+    packageOut="$out/lib/node_modules/@earendil-works/pi-coding-agent"
     mkdir -p "$packageOut"
     cp -R packages/coding-agent/. "$packageOut"
 
@@ -98,20 +98,20 @@ buildNpmPackage {
     mkdir -p "$packageOut/node_modules"
     cp -R node_modules/. "$packageOut/node_modules/"
 
-    rm -rf "$packageOut/node_modules/@mariozechner/pi-mom"
-    rm -rf "$packageOut/node_modules/@mariozechner/pi-proxy"
-    rm -rf "$packageOut/node_modules/@mariozechner/pi-web-ui"
-    rm -rf "$packageOut/node_modules/@mariozechner/pi"
+    rm -rf "$packageOut/node_modules/@earendil-works/pi-mom"
+    rm -rf "$packageOut/node_modules/@earendil-works/pi-proxy"
+    rm -rf "$packageOut/node_modules/@earendil-works/pi-web-ui"
+    rm -rf "$packageOut/node_modules/@earendil-works/pi"
 
-    rm -rf "$packageOut/node_modules/@mariozechner/pi-ai"
-    rm -rf "$packageOut/node_modules/@mariozechner/pi-agent-core"
-    rm -rf "$packageOut/node_modules/@mariozechner/pi-tui"
-    rm -rf "$packageOut/node_modules/@mariozechner/pi-coding-agent"
+    rm -rf "$packageOut/node_modules/@earendil-works/pi-ai"
+    rm -rf "$packageOut/node_modules/@earendil-works/pi-agent-core"
+    rm -rf "$packageOut/node_modules/@earendil-works/pi-tui"
+    rm -rf "$packageOut/node_modules/@earendil-works/pi-coding-agent"
 
-    cp -R packages/ai "$packageOut/node_modules/@mariozechner/pi-ai"
-    cp -R packages/agent "$packageOut/node_modules/@mariozechner/pi-agent-core"
-    cp -R packages/tui "$packageOut/node_modules/@mariozechner/pi-tui"
-    cp -R packages/coding-agent "$packageOut/node_modules/@mariozechner/pi-coding-agent"
+    cp -R packages/ai "$packageOut/node_modules/@earendil-works/pi-ai"
+    cp -R packages/agent "$packageOut/node_modules/@earendil-works/pi-agent-core"
+    cp -R packages/tui "$packageOut/node_modules/@earendil-works/pi-tui"
+    cp -R packages/coding-agent "$packageOut/node_modules/@earendil-works/pi-coding-agent"
 
     find "$packageOut/node_modules" -xtype l -delete
 
@@ -133,7 +133,7 @@ buildNpmPackage {
 
   meta = with lib; {
     description = "Terminal-based coding agent CLI";
-    homepage = "https://github.com/badlogic/pi-mono";
+    homepage = "https://github.com/earendil-works/pi";
     license = licenses.mit;
     platforms = platforms.unix;
     mainProgram = "pi";

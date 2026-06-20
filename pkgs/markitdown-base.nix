@@ -2,7 +2,7 @@
 
 python3Packages.buildPythonApplication rec {
   pname = "markitdown";
-  version = "0.1.5";
+  version = "0.1.6";
   format = "wheel";
 
   src = fetchPypi {
@@ -11,7 +11,7 @@ python3Packages.buildPythonApplication rec {
     python = "py3";
     abi = "none";
     platform = "any";
-    hash = "sha256-UYCpqEHiD8AcLAnbxdA5Y4Qpu+vNwq8bJhXDxCeEBDQ=";
+    hash = "sha256-B7LVv4e1xT4TqfL9xEDfjMyF4m9AweVXeBcntwAEl3U=";
   };
 
   propagatedBuildInputs = with python3Packages; [

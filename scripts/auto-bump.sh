@@ -73,6 +73,9 @@ for pkg in "${PACKAGES[@]}"; do
     dash-mcp-server)
       update_flags+=(--version branch)
       ;;
+    markit)
+      update_flags+=(--version-regex '^v([0-9].*)$')
+      ;;
     markitdown-base)
       update_flags+=(--version "$(latest_pypi_version markitdown)")
       ;;

@@ -43,13 +43,13 @@ let
     [ "npm_config_offline=\"false\"" ]
     (builtins.readFile "${path}/pkgs/build-support/node/build-npm-package/hooks/npm-config-hook.sh")
   ));
-  version = "0.79.9";
-  piNpmDepsHash = "sha256-uej0uXVbihmxpuvviCK/5JFSEqDamIW5ETOL/ZKW45g=";
+  version = "0.79.10";
+  piNpmDepsHash = "sha256-QwnECZVri6w/3KdxITnnRkhtq1GIpzP08C/PF4fMmd4=";
   src = fetchFromGitHub {
     owner = "earendil-works";
     repo = "pi";
     rev = "v${version}";
-    hash = "sha256-+h1D51JM4F2iHCzTA57A5/uAzHQBKSlz/7x3/PtQhec=";
+    hash = "sha256-UMRkOzJpA1XcEHzRwHxgBg6idEmpVJzBKlrXZaVf4MQ=";
   };
 in
 buildNpmPackage {

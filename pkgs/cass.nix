@@ -4,20 +4,20 @@
 }:
 
 let
-  version = "0.4.1";
+  version = "0.6.21";
   asset =
     {
       aarch64-darwin = {
         name = "cass-darwin-arm64.tar.gz";
-        hash = "sha256-9AnanbdiA1qf5wqecrHNuwsE1DUfXNOvyDgu5hIA/OM=";
+        hash = "sha256-MpgQXNZmZSJ2m77tR+l8P/mVWKOKWnrHjIuVBpkmyJ0=";
       };
       x86_64-linux = {
         name = "cass-linux-amd64.tar.gz";
-        hash = "sha256-dwpj+ytObt4uYb5+5x3RNxT/o9/n3WSz7XpnCc/zGtM=";
+        hash = "sha256-PIBw8FPMUUQPhHcPd/y9/269U7Krr1mT2J5DipSM5RE=";
       };
       aarch64-linux = {
         name = "cass-linux-arm64.tar.gz";
-        hash = "sha256-5NPmb24jyKpWALR94uFR/uTju5y+dgChu80IJ++cyPY=";
+        hash = "sha256-VY65CqZ0qrjMAHPPLnwdOYKn9zVW/gh3KMCZ+ghwq/Q=";
       };
     }.${stdenvNoCC.hostPlatform.system} or (throw "cass: unsupported system ${stdenvNoCC.hostPlatform.system}");
 in

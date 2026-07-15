@@ -7,6 +7,9 @@ DEFAULT_PACKAGES=(
   markitdown-base
   markitdown-ocr
   pi-autoresearch
+  pi-web-search
+  pi-agent-browser-native
+  pi-computer-use
   pi-coding-agent
   pi-diff-review
   qmd
@@ -26,6 +29,19 @@ import urllib.request
 package = sys.argv[1]
 with urllib.request.urlopen(f"https://pypi.org/pypi/{package}/json") as response:
     print(json.load(response)["info"]["version"])
+PY
+}
+
+latest_npm_version() {
+  python3 - "$1" <<'PY'
+import json
+import sys
+import urllib.parse
+import urllib.request
+
+package = urllib.parse.quote(sys.argv[1], safe="")
+with urllib.request.urlopen(f"https://registry.npmjs.org/{package}") as response:
+    print(json.load(response)["dist-tags"]["latest"])
 PY
 }
 
@@ -84,6 +100,15 @@ for pkg in "${PACKAGES[@]}"; do
       ;;
     qmd)
       update_flags+=(--override-filename pkgs/qmd.nix)
+      ;;
+    pi-web-search)
+      update_flags+=(--version "$(latest_npm_version pi-web-search)" --override-filename pkgs/pi-web-search.nix)
+      ;;
+    pi-agent-browser-native)
+      update_flags+=(--version "$(latest_npm_version pi-agent-browser-native)" --override-filename pkgs/pi-agent-browser-native.nix)
+      ;;
+    pi-computer-use)
+      update_flags+=(--version "$(latest_npm_version @injaneity/pi-computer-use)" --override-filename pkgs/pi-computer-use.nix)
       ;;
   esac
 

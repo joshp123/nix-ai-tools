@@ -1,3 +1,7 @@
+---
+written_by: ai
+---
+
 # nix-ai-tools
 
 Nix flake of fast-moving AI tools with Garnix builds and hourly auto-bumps.
@@ -33,4 +37,3 @@ outputs = { self, nixpkgs, nix-ai-tools, ... }: {
 - **Garnix** builds all packages for macOS (arm64) and Linux (x86_64, arm64)
 - **Auto-bump** workflow checks upstream hourly and pushes commits when versions move
 - `scripts/auto-bump.sh` covers packages that `nix-update` can safely bump.
-- `lexcite` depends on local Lawbot sources and is exposed as a package, but excluded from CI checks.

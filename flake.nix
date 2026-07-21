@@ -13,7 +13,6 @@
       inherit (helpers) systems forAllSystems;
 
       packageSystems = {
-        lexcite = [ "aarch64-darwin" "x86_64-darwin" ];
         cass = [ "aarch64-darwin" "x86_64-linux" "aarch64-linux" ];
         cm = [ "aarch64-darwin" "x86_64-linux" "aarch64-linux" ];
         qmd = [ "aarch64-darwin" "x86_64-darwin" ];
@@ -40,7 +39,6 @@
             // optional "markitdown-ocr" { markitdown-ocr = markitdownOcrPkg; }
             // optional "xcodebuildmcp" { xcodebuildmcp = pkgs.callPackage ./pkgs/xcodebuildmcp.nix { nodejs = pkgs.nodejs_22; }; }
             // optional "spogo" { spogo = pkgs.callPackage ./pkgs/spogo.nix {}; }
-            // optional "lexcite" { lexcite = pkgs.callPackage ./pkgs/lexcite.nix {}; }
             // optional "nanobanana" { nanobanana = pkgs.callPackage ./pkgs/nanobanana.nix {}; }
             // optional "pi-coding-agent" { pi-coding-agent = piPkg; }
             // optional "pi-diff-review" { pi-diff-review = pkgs.callPackage ./pkgs/pi-diff-review.nix { nodejs = pkgs.nodejs_22; }; }
@@ -84,7 +82,6 @@
           markitdown-ocr = markitdownOcrPkg;
           xcodebuildmcp = prev.callPackage ./pkgs/xcodebuildmcp.nix { nodejs = prev.nodejs_22; };
           spogo = prev.callPackage ./pkgs/spogo.nix {};
-          lexcite = prev.callPackage ./pkgs/lexcite.nix {};
           nanobanana = prev.callPackage ./pkgs/nanobanana.nix {};
           qmd = prev.callPackage ./pkgs/qmd.nix { inherit (bunPkgs) bun2nix; };
           cass = cassPkg;
@@ -96,6 +93,6 @@
           pi-computer-use = prev.callPackage ./pkgs/pi-computer-use.nix { pi-coding-agent = final.pi-coding-agent; };
         };
 
-      checks = forAllSystems (system: lib.removeAttrs self.packages.${system} [ "lexcite" ]);
+      checks = self.packages;
     };
 }

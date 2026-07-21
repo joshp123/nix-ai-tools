@@ -1,3 +1,7 @@
+---
+written_by: ai
+---
+
 # nix-ai-tools
 
 Nix packages for fast-moving AI tools. Auto-bumped hourly via CI.
@@ -22,7 +26,7 @@ nix run .#build-switch --override-input nix-ai-tools path:/Users/josh/code/nix/n
 1. Create `pkgs/<name>.nix`
 2. Add to `flake.nix` packages
 3. Add to `scripts/auto-bump.sh` list if safe
-4. Push — Garnix builds + caches
+4. Push — GitHub Actions builds and publishes to Cachix
 
 ## Golden path: manual bump
 
@@ -63,7 +67,7 @@ buildNpmPackage {
 
 ## CI
 
-- **Garnix**: Builds all packages, caches binaries
+- **GitHub Actions**: Builds packages on native runners and publishes successful outputs to Cachix
 - **Auto-bump**: Hourly cron calls `scripts/auto-bump.sh`
 
 ## Upstream to nixpkgs

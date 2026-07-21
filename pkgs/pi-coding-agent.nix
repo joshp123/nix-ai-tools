@@ -9,6 +9,7 @@
 , prefetch-npm-deps
 , pkg-config
 , python3
+, removeReferencesTo
 , cacert
 , cairo
 , freetype
@@ -71,7 +72,7 @@ buildNpmPackage {
     fi
   '';
 
-  nativeBuildInputs = [ pkg-config python3 ];
+  nativeBuildInputs = [ pkg-config python3 removeReferencesTo ];
   buildInputs = [ cairo freetype fontconfig giflib libjpeg libpng pango pixman ];
 
   preBuild = ''
@@ -114,6 +115,21 @@ buildNpmPackage {
     cp -R packages/coding-agent "$packageOut/node_modules/@earendil-works/pi-coding-agent"
 
     find "$packageOut/node_modules" -xtype l -delete
+
+    # Keep only the native add-ons from node-gyp's build trees. Object files,
+    # archives and make metadata retain the compiler, SDK and Node sources.
+    find "$packageOut/node_modules" -type f \( \
+      -name '*.o' -o \
+      -name '*.a' -o \
+      -name '*.mk' -o \
+      -name 'Makefile' -o \
+      -name 'config.gypi' \
+    \) -delete
+    find "$packageOut/node_modules" -type f -name '*.node' -exec strip -S {} +
+
+    # node-gyp leaves the Node source path in native-addon build metadata.
+    # It is not needed at runtime and otherwise retains about 482 MiB.
+    remove-references-to -t "${srcOnly nodejs}" "$out"
 
     runHook postInstall
   '';

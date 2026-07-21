@@ -2,6 +2,8 @@
 set -euo pipefail
 
 DEFAULT_PACKAGES=(
+  claude-code
+  codex
   dash-mcp-server
   markit
   markitdown-base
@@ -45,6 +47,16 @@ with urllib.request.urlopen(f"https://registry.npmjs.org/{package}") as response
 PY
 }
 
+latest_text_version() {
+  python3 - "$1" <<'PY'
+import sys
+import urllib.request
+
+with urllib.request.urlopen(sys.argv[1]) as response:
+    print(response.read().decode().strip())
+PY
+}
+
 run_with_timeout() {
   "$@" &
   local pid=$!
@@ -67,6 +79,24 @@ run_with_timeout() {
   return "$status"
 }
 
+restore_successful_updates() {
+  local patch_file=$1
+
+  git restore --source=HEAD --staged --worktree -- .
+  if [[ -s "$patch_file" ]]; then
+    git apply "$patch_file"
+  fi
+}
+
+if ! git diff --quiet HEAD --; then
+  echo "error: auto-bump requires a clean tracked worktree" >&2
+  exit 2
+fi
+
+successful_patch=$(mktemp)
+current_patch=$(mktemp)
+trap 'rm -f "$successful_patch" "$current_patch"' EXIT
+
 if [[ $# -gt 0 ]]; then
   PACKAGES=("$@")
 else
@@ -80,12 +110,15 @@ for pkg in "${PACKAGES[@]}"; do
     continue
   fi
   echo "==> checking ${pkg}"
-  build_flags=()
-  if [[ -n "$AUTO_BUILD" ]]; then
-    build_flags+=(--build)
-  fi
+  git diff --binary HEAD -- >"$successful_patch"
   update_flags=()
   case "$pkg" in
+    claude-code)
+      update_flags+=(--version "$(latest_text_version https://downloads.claude.ai/claude-code-releases/latest)")
+      ;;
+    codex)
+      update_flags+=(--version-regex '^rust-v([0-9].*)$')
+      ;;
     dash-mcp-server)
       update_flags+=(--version branch)
       ;;
@@ -113,18 +146,26 @@ for pkg in "${PACKAGES[@]}"; do
   esac
 
   command=(nix run nixpkgs#nix-update -- -F --system "$AUTO_SYSTEM")
-  if [[ ${#build_flags[@]} -gt 0 ]]; then
-    command+=("${build_flags[@]}")
-  fi
   if [[ ${#update_flags[@]} -gt 0 ]]; then
     command+=("${update_flags[@]}")
   fi
   command+=("$pkg")
 
-  if run_with_timeout "${command[@]}"; then
-    continue
-  else
+  if ! run_with_timeout "${command[@]}"; then
     echo "warn: ${pkg} update failed" >&2
+    restore_successful_updates "$successful_patch"
+    failed=1
+    continue
+  fi
+
+  git diff --binary HEAD -- >"$current_patch"
+  if cmp -s "$successful_patch" "$current_patch"; then
+    continue
+  fi
+
+  if [[ -n "$AUTO_BUILD" ]] && ! run_with_timeout nix build ".#${pkg}" --no-link -L; then
+    echo "warn: ${pkg} build failed; discarding only this package's update" >&2
+    restore_successful_updates "$successful_patch"
     failed=1
   fi
 done
@@ -139,6 +180,11 @@ if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
   else
     echo "has_updates=false" >>"$GITHUB_OUTPUT"
   fi
+  if [[ $failed -eq 1 ]]; then
+    echo "has_failures=true" >>"$GITHUB_OUTPUT"
+  else
+    echo "has_failures=false" >>"$GITHUB_OUTPUT"
+  fi
 fi
 
 if [[ $updated -eq 1 ]]; then
@@ -147,6 +193,4 @@ else
   echo "no updates"
 fi
 
-if [[ $failed -eq 1 ]]; then
-  exit 1
-fi
+exit 0

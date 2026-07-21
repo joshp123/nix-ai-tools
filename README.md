@@ -4,7 +4,9 @@ written_by: ai
 
 # nix-ai-tools
 
-Nix flake of fast-moving AI tools with Garnix builds and hourly auto-bumps.
+Nix flake of fast-moving AI tools with hourly auto-bumps. GitHub Actions builds
+changed packages and publishes successful outputs to the public
+`joshp123-nix-ai-tools.cachix.org` binary cache.
 
 ## Usage
 
@@ -24,7 +26,7 @@ outputs = { self, nixpkgs, nix-ai-tools, ... }: {
 1. Create `pkgs/<name>.nix`
 2. Add it in `flake.nix` under `packagesFor`
 3. Add to `scripts/auto-bump.sh` if it can update safely
-4. Commit and push — Garnix builds + caches
+4. Commit and push — GitHub Actions builds and publishes to Cachix
 
 ## Manual bump
 
@@ -34,6 +36,6 @@ outputs = { self, nixpkgs, nix-ai-tools, ... }: {
 
 ## CI
 
-- **Garnix** builds all packages for macOS (arm64) and Linux (x86_64, arm64)
+- **GitHub Actions** builds packages on native runners and publishes to Cachix
 - **Auto-bump** workflow checks upstream hourly and pushes commits when versions move
 - `scripts/auto-bump.sh` covers packages that `nix-update` can safely bump.

@@ -13,6 +13,8 @@
       inherit (helpers) systems forAllSystems;
 
       packageSystems = {
+        claude-code = [ "aarch64-darwin" ];
+        codex = [ "aarch64-darwin" ];
         cass = [ "aarch64-darwin" "x86_64-linux" "aarch64-linux" ];
         cm = [ "aarch64-darwin" "x86_64-linux" "aarch64-linux" ];
         qmd = [ "aarch64-darwin" "x86_64-darwin" ];
@@ -32,7 +34,9 @@
           markitdownOcrPkg = pkgs.callPackage ./pkgs/markitdown-ocr.nix { markitdown-base = markitdownBasePkg; };
           piPkg = pkgs.callPackage ./pkgs/pi-coding-agent.nix { inherit (pkgs) path; };
           pkgSet =
-            optional "dash-mcp-server" { dash-mcp-server = pkgs.callPackage ./pkgs/dash-mcp-server.nix {}; }
+            optional "claude-code" { claude-code = pkgs.callPackage ./pkgs/claude-code.nix {}; }
+            // optional "codex" { codex = pkgs.callPackage ./pkgs/codex.nix {}; }
+            // optional "dash-mcp-server" { dash-mcp-server = pkgs.callPackage ./pkgs/dash-mcp-server.nix {}; }
             // optional "markit" { markit = pkgs.callPackage ./pkgs/markit.nix { nodejs = pkgs.nodejs_22; }; }
             // optional "markitdown-base" { markitdown-base = markitdownBasePkg; }
             // optional "markitdown" { markitdown = pkgs.callPackage ./pkgs/markitdown.nix { markitdown-base = markitdownBasePkg; markitdown-ocr = markitdownOcrPkg; }; }
@@ -57,6 +61,7 @@
       packagesFor = system: mkPackages (import nixpkgs {
         inherit system;
         overlays = [ bun2nix.overlays.default ];
+        config.allowUnfreePredicate = pkg: lib.getName pkg == "claude-code";
       });
     in {
       packages = forAllSystems packagesFor;
@@ -72,6 +77,8 @@
           markitdownBasePkg = prev.callPackage ./pkgs/markitdown-base.nix {};
           markitdownOcrPkg = prev.callPackage ./pkgs/markitdown-ocr.nix { markitdown-base = markitdownBasePkg; };
         in {
+          claude-code = prev.callPackage ./pkgs/claude-code.nix {};
+          codex = prev.callPackage ./pkgs/codex.nix {};
           pi-coding-agent = prev.callPackage ./pkgs/pi-coding-agent.nix { inherit (prev) path; };
           pi-diff-review = prev.callPackage ./pkgs/pi-diff-review.nix { nodejs = prev.nodejs_22; };
           pi-autoresearch = prev.callPackage ./pkgs/pi-autoresearch.nix {};

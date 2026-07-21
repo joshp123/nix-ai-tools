@@ -1,0 +1,40 @@
+name: Build native AI CLIs
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-ai-clis:
+    runs-on: macos-14
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install Nix
+        uses: DeterminateSystems/determinate-nix-action@v3
+
+      - name: Use and populate the binary cache
+        uses: cachix/cachix-action@v17
+        with:
+          name: joshp123-nix-ai-tools
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+
+      - name: Evaluate the flake
+        run: nix flake check --no-build
+
+      - name: Build native Codex and Claude Code
+        run: |
+          nix build .#codex --out-link result-codex -L
+          nix build .#claude-code --out-link result-claude -L
+
+      - name: Verify the commands
+        run: |
+          ./result-codex/bin/codex --version
+          ./result-claude/bin/claude --version

@@ -13,12 +13,18 @@ jobs:
     runs-on: macos-14
     timeout-minutes: 90
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@v12
+        uses: DeterminateSystems/determinate-nix-action@v3
+
+      - name: Use and populate the binary cache
+        uses: cachix/cachix-action@v17
+        with:
+          name: joshp123-nix-ai-tools
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
 
       - name: Auto-bump packages (source builds run in CI)
         id: bump
@@ -35,3 +41,9 @@ jobs:
           git add -A
           git commit -m "chore: auto-bump" || exit 0
           git push
+
+      - name: Report package failures
+        if: steps.bump.outputs.has_failures == 'true'
+        run: |
+          echo "One or more packages failed to update or build. Green package updates were still published." >&2
+          exit 1

@@ -38,7 +38,7 @@ jobs:
 
       - name: Build the complete workstation package set
         run: |
-          nix build --no-link -L \
+          nix build --no-link --print-out-paths -L \
             .#agent-browser \
             .#cass \
             .#cm \
@@ -52,7 +52,18 @@ jobs:
             .#pi-web-search \
             .#qmd \
             .#spogo \
-            .#xcodebuildmcp
+            .#xcodebuildmcp \
+            | tee "$RUNNER_TEMP/workstation-output-paths"
+
+      - name: Publish the complete package set
+        run: |
+          {
+            readlink result-codex
+            readlink result-claude
+            cat "$RUNNER_TEMP/workstation-output-paths"
+          } \
+            | sort -u \
+            | xargs cachix push joshp123-nix-ai-tools
 
       - name: Verify the commands
         run: |

@@ -26,8 +26,10 @@ jobs:
           name: joshp123-nix-ai-tools
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
 
-      - name: Evaluate the flake
-        run: nix flake check --no-build
+      - name: Evaluate native Codex and Claude Code
+        run: |
+          nix eval .#packages.aarch64-darwin.codex.drvPath --raw
+          nix eval .#packages.aarch64-darwin.claude-code.drvPath --raw
 
       - name: Build native Codex and Claude Code
         run: |

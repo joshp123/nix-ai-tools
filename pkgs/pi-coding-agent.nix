@@ -125,11 +125,11 @@ buildNpmPackage {
       -name 'Makefile' -o \
       -name 'config.gypi' \
     \) -delete
-    find "$packageOut/node_modules" -type f -name '*.node' -exec strip -S {} +
+    find "$packageOut/node_modules" -type f -path '*/build/Release/*.node' -exec strip -S {} +
 
     # node-gyp leaves the Node source path in native-addon build metadata.
     # It is not needed at runtime and otherwise retains about 482 MiB.
-    remove-references-to -t "${srcOnly nodejs}" "$out"
+    find "$out" -type f -exec remove-references-to -t "${srcOnly nodejs}" {} +
 
     runHook postInstall
   '';

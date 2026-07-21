@@ -15,13 +15,13 @@ jobs:
     runs-on: macos-14
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
       - name: Install Nix
-        uses: DeterminateSystems/determinate-nix-action@v3
+        uses: DeterminateSystems/determinate-nix-action@d96678350ffd6a456235832eb11e1c491589b7bb # v3
 
       - name: Use and populate the binary cache
-        uses: cachix/cachix-action@v17
+        uses: cachix/cachix-action@5f2d7c5294214f71b873db4b969586b980625e71 # v17
         with:
           name: joshp123-nix-ai-tools
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
@@ -35,6 +35,24 @@ jobs:
         run: |
           nix build .#codex --out-link result-codex -L
           nix build .#claude-code --out-link result-claude -L
+
+      - name: Build the complete workstation package set
+        run: |
+          nix build --no-link -L \
+            .#agent-browser \
+            .#cass \
+            .#cm \
+            .#dash-mcp-server \
+            .#herdr \
+            .#markit \
+            .#markitdown \
+            .#pi-agent-browser-native \
+            .#pi-coding-agent \
+            .#pi-computer-use \
+            .#pi-web-search \
+            .#qmd \
+            .#spogo \
+            .#xcodebuildmcp
 
       - name: Verify the commands
         run: |

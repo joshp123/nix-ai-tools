@@ -24,11 +24,12 @@ jobs:
       - name: Install Nix
         uses: DeterminateSystems/determinate-nix-action@d96678350ffd6a456235832eb11e1c491589b7bb # v3
 
-      - name: Use and populate the binary cache
+      - name: Use the binary cache
         uses: cachix/cachix-action@5f2d7c5294214f71b873db4b969586b980625e71 # v17
         with:
           name: joshp123-nix-ai-tools
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+          skipPush: true
 
       - name: Auto-bump packages (source builds run in CI)
         id: bump

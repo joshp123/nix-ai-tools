@@ -20,16 +20,12 @@ jobs:
       - name: Install Nix
         uses: DeterminateSystems/determinate-nix-action@d96678350ffd6a456235832eb11e1c491589b7bb # v3
 
-      - name: Use and populate the binary cache
+      - name: Use the binary cache
         uses: cachix/cachix-action@5f2d7c5294214f71b873db4b969586b980625e71 # v17
         with:
           name: joshp123-nix-ai-tools
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-
-      - name: Evaluate native Codex and Claude Code
-        run: |
-          nix eval .#packages.aarch64-darwin.codex.drvPath --raw
-          nix eval .#packages.aarch64-darwin.claude-code.drvPath --raw
+          skipPush: true
 
       - name: Build native Codex and Claude Code
         run: |
@@ -38,6 +34,7 @@ jobs:
 
       - name: Build the complete workstation package set
         run: |
+          set -o pipefail
           nix build --no-link --print-out-paths -L \
             .#agent-browser \
             .#cass \
@@ -56,6 +53,7 @@ jobs:
             | tee "$RUNNER_TEMP/workstation-output-paths"
 
       - name: Publish the complete package set
+        if: github.event_name != 'pull_request'
         env:
           CACHIX_AUTH_TOKEN: ${{ secrets.CACHIX_AUTH_TOKEN }}
         run: |

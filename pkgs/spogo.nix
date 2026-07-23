@@ -2,7 +2,7 @@
 
 buildGoModule rec {
   pname = "spogo";
-  version = "0.10.0";
+  version = "0.10.0"; # 0.10.3 requires Go 1.25.12; pinned nixpkgs has 1.25.5.
 
   src = fetchFromGitHub {
     owner = "steipete";

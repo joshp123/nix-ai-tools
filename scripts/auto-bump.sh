@@ -12,10 +12,8 @@ DEFAULT_PACKAGES=(
   pi-web-search
   pi-agent-browser-native
   pi-computer-use
-  pi-coding-agent
   pi-diff-review
   qmd
-  spogo
   xcodebuildmcp
 )
 AUTO_SYSTEM=${AUTO_BUMP_SYSTEM:-aarch64-darwin}

@@ -44,7 +44,7 @@ let
     [ "npm_config_offline=\"false\"" ]
     (builtins.readFile "${path}/pkgs/build-support/node/build-npm-package/hooks/npm-config-hook.sh")
   ));
-  version = "0.80.10";
+  version = "0.80.10"; # 0.81.1 requires live model-catalog generation.
   piNpmDepsHash = "sha256-XGvDNH+eilsgc0Z7ITqbitB/9RVc+WuDfCcr1pibNqk=";
   src = fetchFromGitHub {
     owner = "earendil-works";

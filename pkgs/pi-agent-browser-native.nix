@@ -2,11 +2,11 @@
 
 ((callPackage ./pi-package.nix {
   inherit pi-coding-agent;
-}) {
+}) rec {
   pname = "pi-agent-browser-native";
   version = "0.2.72";
-  url = "https://registry.npmjs.org/pi-agent-browser-native/-/pi-agent-browser-native-0.2.67.tgz";
-  hash = "sha256-pLAsd1foG5KCunwJ5pC3jQ5RhIC9BxXy3XsUTb+MKvE=";
+  url = "https://registry.npmjs.org/pi-agent-browser-native/-/pi-agent-browser-native-${version}.tgz";
+  hash = "sha256-3subgZHSxRN4wigNrM0KO6o2QmNSr8PtdrT4mg2kRlE=";
   binEntries = [
     "pi-agent-browser-config:scripts/config.mjs"
     "pi-agent-browser-doctor:scripts/doctor.mjs"

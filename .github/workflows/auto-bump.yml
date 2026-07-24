@@ -29,7 +29,6 @@ jobs:
         with:
           name: joshp123-nix-ai-tools
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-          skipPush: true
 
       - name: Auto-bump packages (source builds run in CI)
         id: bump

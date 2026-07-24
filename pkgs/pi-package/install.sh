@@ -4,7 +4,7 @@ package_dir="$out/share/pi/packages/$piPackageName"
 install -d "$package_dir"
 tar -xzf "$src" --strip-components=1 -C "$package_dir"
 
-actual_version=$("$nodejs_22/bin/node" -p \
+actual_version=$("$runtimeNode/bin/node" -p \
   "require('$package_dir/package.json').version")
 if [ "$actual_version" != "$version" ]; then
   echo "error: $pname declares version $version but contains $actual_version" >&2
@@ -21,7 +21,7 @@ ln -s "$piPeerNodeModules/typebox" "$package_dir/node_modules/typebox"
 for entry in $binEntries; do
   name="${entry%%:*}"
   script="${entry#*:}"
-  makeWrapper "$nodejs_22/bin/node" "$out/bin/$name" \
+  makeWrapper "$runtimeNode/bin/node" "$out/bin/$name" \
     --add-flags "$package_dir/$script"
 done
 

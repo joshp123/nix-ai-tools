@@ -2,7 +2,7 @@
 , stdenvNoCC
 , fetchurl
 , makeWrapper
-, nodejs_22
+, nodejs-slim_22
 , pi-coding-agent
 }:
 { pname
@@ -24,7 +24,8 @@ stdenvNoCC.mkDerivation {
 
   piPackageName = packageName;
   piPeerNodeModules = "${pi-coding-agent}/lib/node_modules/@earendil-works/pi-coding-agent/node_modules";
-  inherit binEntries nodejs_22;
+  inherit binEntries;
+  runtimeNode = nodejs-slim_22;
 
   installPhase = builtins.readFile ./pi-package/install.sh;
 }

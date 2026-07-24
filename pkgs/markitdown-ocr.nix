@@ -1,5 +1,24 @@
-{ fetchurl, lib, python3Packages, markitdown-base ? python3Packages.callPackage ./markitdown-base.nix { } }:
+{ fetchurl
+, lib
+, mupdf
+, python3Packages
+, tesseract5
+, markitdown-base ? python3Packages.callPackage ./markitdown-base.nix { }
+}:
 
+let
+  tesseract = tesseract5.override {
+    enableLanguages = [
+      "chi_sim"
+      "chi_sim_vert"
+      "eng"
+      "nld"
+    ];
+  };
+  pymupdf = python3Packages.pymupdf.override {
+    mupdf = mupdf.override { inherit tesseract; };
+  };
+in
 python3Packages.buildPythonPackage rec {
   pname = "markitdown-ocr";
   version = "0.1.0";

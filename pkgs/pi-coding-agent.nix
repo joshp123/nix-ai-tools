@@ -2,6 +2,7 @@
 , buildNpmPackage
 , fetchFromGitHub
 , nodejs_22
+, nodejs-slim_22
 , diffutils
 , makeSetupHook
 , writeText
@@ -95,6 +96,8 @@ buildNpmPackage {
     nodejsInstallExecutables package.json
     nodejsInstallManuals package.json
     popd >/dev/null
+    substituteInPlace "$out/bin/pi" \
+      --replace-fail "${nodejs}/bin/node" "${nodejs-slim_22}/bin/node"
 
     mkdir -p "$packageOut/node_modules"
     cp -R node_modules/. "$packageOut/node_modules/"
@@ -134,8 +137,18 @@ buildNpmPackage {
     runHook postInstall
   '';
 
+  postFixup = ''
+    while IFS= read -r file; do
+      substituteInPlace "$file" \
+        --replace-fail "${nodejs}/bin/node" "${nodejs-slim_22}/bin/node"
+    done < <(grep -IlrF "${nodejs}/bin/node" "$out")
+    find "$out" -type f -exec remove-references-to -t "${nodejs}" {} +
+  '';
+
   npmWorkspace = "packages/coding-agent";
   npmBuildScript = "build";
+
+  passthru.runtimeNode = nodejs-slim_22;
 
   env = {
     CI = "1";

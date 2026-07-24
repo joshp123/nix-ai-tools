@@ -30,8 +30,16 @@
           system = pkgs.stdenv.hostPlatform.system;
           optional = name: value: lib.optionalAttrs (supports system name) value;
           cassPkg = if supports system "cass" then pkgs.callPackage ./pkgs/cass.nix {} else null;
-          markitdownBasePkg = pkgs.callPackage ./pkgs/markitdown-base.nix {};
-          markitdownOcrPkg = pkgs.callPackage ./pkgs/markitdown-ocr.nix { markitdown-base = markitdownBasePkg; };
+          markitdownPythonPackages = import ./pkgs/markitdown-python-packages.nix {
+            inherit (pkgs) ffmpeg-headless python3Packages;
+          };
+          markitdownBasePkg = pkgs.callPackage ./pkgs/markitdown-base.nix {
+            python3Packages = markitdownPythonPackages;
+          };
+          markitdownOcrPkg = pkgs.callPackage ./pkgs/markitdown-ocr.nix {
+            python3Packages = markitdownPythonPackages;
+            markitdown-base = markitdownBasePkg;
+          };
           piPkg = pkgs.callPackage ./pkgs/pi-coding-agent.nix { inherit (pkgs) path; };
           pkgSet =
             optional "claude-code" { claude-code = pkgs.callPackage ./pkgs/claude-code.nix {}; }
@@ -74,8 +82,16 @@
             overlays = [ bun2nix.overlays.default ];
           };
           cassPkg = prev.callPackage ./pkgs/cass.nix {};
-          markitdownBasePkg = prev.callPackage ./pkgs/markitdown-base.nix {};
-          markitdownOcrPkg = prev.callPackage ./pkgs/markitdown-ocr.nix { markitdown-base = markitdownBasePkg; };
+          markitdownPythonPackages = import ./pkgs/markitdown-python-packages.nix {
+            inherit (prev) ffmpeg-headless python3Packages;
+          };
+          markitdownBasePkg = prev.callPackage ./pkgs/markitdown-base.nix {
+            python3Packages = markitdownPythonPackages;
+          };
+          markitdownOcrPkg = prev.callPackage ./pkgs/markitdown-ocr.nix {
+            python3Packages = markitdownPythonPackages;
+            markitdown-base = markitdownBasePkg;
+          };
         in {
           claude-code = prev.callPackage ./pkgs/claude-code.nix {};
           codex = prev.callPackage ./pkgs/codex.nix {};

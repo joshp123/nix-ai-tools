@@ -1,4 +1,4 @@
-{ lib, buildNpmPackage, fetchFromGitHub, nodejs }:
+{ lib, buildNpmPackage, fetchFromGitHub, nodejs, nodejs-slim_22, removeReferencesTo }:
 
 let
   version = "0.5.3";
@@ -24,6 +24,17 @@ buildNpmPackage {
   '';
 
   env = { CI = "1"; };
+
+  nativeBuildInputs = [ removeReferencesTo ];
+  postFixup = ''
+    while IFS= read -r file; do
+      substituteInPlace "$file" \
+        --replace-fail "${nodejs}/bin/node" "${nodejs-slim_22}/bin/node"
+    done < <(grep -IlrF "${nodejs}/bin/node" "$out")
+    find "$out" -type f -exec remove-references-to -t "${nodejs}" {} +
+  '';
+
+  passthru.runtimeNode = nodejs-slim_22;
 
   meta = with lib; {
     description = "Convert documents and media to Markdown with layout-aware PDF support";

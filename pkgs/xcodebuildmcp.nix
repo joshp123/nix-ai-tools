@@ -1,4 +1,4 @@
-{ lib, buildNpmPackage, fetchFromGitHub, nodejs }:
+{ lib, buildNpmPackage, fetchFromGitHub, nodejs, nodejs-slim_22, removeReferencesTo }:
 
 let
   version = "2.7.0";
@@ -19,6 +19,17 @@ buildNpmPackage {
   inherit version src npmDepsHash nodejs env;
 
   npmBuildScript = "build";
+
+  nativeBuildInputs = [ removeReferencesTo ];
+  postFixup = ''
+    while IFS= read -r file; do
+      substituteInPlace "$file" \
+        --replace-fail "${nodejs}/bin/node" "${nodejs-slim_22}/bin/node"
+    done < <(grep -IlrF "${nodejs}/bin/node" "$out")
+    find "$out" -type f -exec remove-references-to -t "${nodejs}" {} +
+  '';
+
+  passthru.runtimeNode = nodejs-slim_22;
 
   meta = with lib; {
     description = "MCP server for Xcode project and simulator management";

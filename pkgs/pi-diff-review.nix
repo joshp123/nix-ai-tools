@@ -1,4 +1,4 @@
-{ lib, buildNpmPackage, fetchFromGitHub, nodejs }:
+{ lib, buildNpmPackage, fetchFromGitHub, nodejs, nodejs-slim_22, removeReferencesTo }:
 
 let
   version = "0.2.0";
@@ -20,6 +20,17 @@ buildNpmPackage {
   # ~/.cache during activation and point pi at it via GLIMPSE_BINARY_PATH.
   npmFlags = [ "--ignore-scripts" ];
   npmInstallFlags = [ "--legacy-peer-deps" ];
+
+  nativeBuildInputs = [ removeReferencesTo ];
+  postFixup = ''
+    while IFS= read -r file; do
+      substituteInPlace "$file" \
+        --replace-fail "${nodejs}/bin/node" "${nodejs-slim_22}/bin/node"
+    done < <(grep -IlrF "${nodejs}/bin/node" "$out")
+    find "$out" -type f -exec remove-references-to -t "${nodejs}" {} +
+  '';
+
+  passthru.runtimeNode = nodejs-slim_22;
 
   meta = with lib; {
     description = "Native diff review window extension for pi";

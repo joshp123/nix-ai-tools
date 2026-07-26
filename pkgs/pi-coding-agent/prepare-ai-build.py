@@ -5,9 +5,9 @@ Why:
 - Upstream build scripts run model generators, which fetch live provider catalogs.
 - Nix builds should stay deterministic/cacheable.
 
-This script:
-1) Strips model generation from packages/ai/package.json build script
-2) Uses the generated model files committed in the upstream release tarball
+This script strips model generation from packages/ai/package.json. The Nix
+package supplies the matching generated model data from the published pi-ai
+package before this script runs.
 """
 
 from __future__ import annotations

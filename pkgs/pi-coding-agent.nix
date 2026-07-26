@@ -1,6 +1,7 @@
 { lib
 , buildNpmPackage
 , fetchFromGitHub
+, fetchurl
 , nodejs_22
 , nodejs-slim_22
 , diffutils
@@ -45,13 +46,17 @@ let
     [ "npm_config_offline=\"false\"" ]
     (builtins.readFile "${path}/pkgs/build-support/node/build-npm-package/hooks/npm-config-hook.sh")
   ));
-  version = "0.80.10"; # 0.81.1 requires live model-catalog generation.
-  piNpmDepsHash = "sha256-XGvDNH+eilsgc0Z7ITqbitB/9RVc+WuDfCcr1pibNqk=";
+  version = "0.82.1";
+  piNpmDepsHash = "sha256-5pHRwxpKg95/phOcYHeWdvPJNtSOhiw7PRoVxsuh0RM=";
   src = fetchFromGitHub {
     owner = "earendil-works";
     repo = "pi";
     rev = "v${version}";
-    hash = "sha256-Vs/ndHYzFyfN4CjPV2zMYblLXe9IuM13UrPJI1VsZEQ=";
+    hash = "sha256-LESpgd/KUoNqdBfnd1oyMN8coKm0Odbo9GYkUDry8Zk=";
+  };
+  piAiRelease = fetchurl {
+    url = "https://registry.npmjs.org/@earendil-works/pi-ai/-/pi-ai-${version}.tgz";
+    hash = "sha256-L535UigItiHNNEmHZTfwPYqN+LjX7C1bGMapEKqFtJA=";
   };
 in
 buildNpmPackage {
@@ -71,6 +76,11 @@ buildNpmPackage {
     if [ ! -f packages/coding-agent/CHANGELOG.md ]; then
       touch packages/coding-agent/CHANGELOG.md
     fi
+    mkdir -p packages/ai/src/providers/data
+    tar -xzf ${piAiRelease} \
+      -C packages/ai/src/providers/data \
+      --strip-components=4 \
+      package/dist/providers/data
   '';
 
   nativeBuildInputs = [ pkg-config python3 removeReferencesTo ];

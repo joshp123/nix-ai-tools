@@ -115,7 +115,7 @@ for pkg in "${PACKAGES[@]}"; do
       update_flags+=(--version "$(latest_text_version https://downloads.claude.ai/claude-code-releases/latest)")
       ;;
     codex)
-      update_flags+=(--version-regex '^rust-v([0-9].*)$')
+      update_flags+=(--version "$(latest_npm_version @openai/codex)")
       ;;
     dash-mcp-server)
       update_flags+=(--version branch)

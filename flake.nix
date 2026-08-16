@@ -51,7 +51,6 @@
             // optional "markitdown-ocr" { markitdown-ocr = markitdownOcrPkg; }
             // optional "xcodebuildmcp" { xcodebuildmcp = pkgs.callPackage ./pkgs/xcodebuildmcp.nix { nodejs = pkgs.nodejs_22; }; }
             // optional "spogo" { spogo = pkgs.callPackage ./pkgs/spogo.nix {}; }
-            // optional "nanobanana" { nanobanana = pkgs.callPackage ./pkgs/nanobanana.nix {}; }
             // optional "pi-coding-agent" { pi-coding-agent = piPkg; }
             // optional "pi-diff-review" { pi-diff-review = pkgs.callPackage ./pkgs/pi-diff-review.nix { nodejs = pkgs.nodejs_22; }; }
             // optional "pi-autoresearch" { pi-autoresearch = pkgs.callPackage ./pkgs/pi-autoresearch.nix {}; }
@@ -105,7 +104,6 @@
           markitdown-ocr = markitdownOcrPkg;
           xcodebuildmcp = prev.callPackage ./pkgs/xcodebuildmcp.nix { nodejs = prev.nodejs_22; };
           spogo = prev.callPackage ./pkgs/spogo.nix {};
-          nanobanana = prev.callPackage ./pkgs/nanobanana.nix {};
           qmd = prev.callPackage ./pkgs/qmd.nix { inherit (bunPkgs) bun2nix; };
           cass = cassPkg;
           cm = prev.callPackage ./pkgs/cm.nix { cass = cassPkg; };

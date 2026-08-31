@@ -5,7 +5,7 @@
 }:
 
 let
-  version = "0.5.0";
+  version = "0.5.1";
 in
 stdenvNoCC.mkDerivation {
   pname = "pi-computer-use";
@@ -13,7 +13,7 @@ stdenvNoCC.mkDerivation {
 
   src = fetchurl {
     url = "https://registry.npmjs.org/@injaneity/pi-computer-use/-/pi-computer-use-${version}.tgz";
-    hash = "sha256-NxCxMAaw6It+Se5PBKdK6KjsQnmhl7Wm5VC70jBQsoE=";
+    hash = "sha256-7H//RaP+u6srXDAtsRcfXxDWyoWqzYkqn0IgKCRty3k=";
   };
   dontUnpack = true;
   outputs = [ "out" "helper" ];

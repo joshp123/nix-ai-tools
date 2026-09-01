@@ -46,17 +46,17 @@ let
     [ "npm_config_offline=\"false\"" ]
     (builtins.readFile "${path}/pkgs/build-support/node/build-npm-package/hooks/npm-config-hook.sh")
   ));
-  version = "0.82.1";
-  piNpmDepsHash = "sha256-5pHRwxpKg95/phOcYHeWdvPJNtSOhiw7PRoVxsuh0RM=";
+  version = "0.84.4";
+  piNpmDepsHash = "sha256-35GC3Q4Jf4URvqoEYHeM63x49tTmrth62//PvKm4I7Q=";
   src = fetchFromGitHub {
     owner = "earendil-works";
     repo = "pi";
     rev = "v${version}";
-    hash = "sha256-LESpgd/KUoNqdBfnd1oyMN8coKm0Odbo9GYkUDry8Zk=";
+    hash = "sha256-7z8OXao1PzmBEepDkIqVqyfQBPHulBlKcGymDYsnMvc=";
   };
   piAiRelease = fetchurl {
     url = "https://registry.npmjs.org/@earendil-works/pi-ai/-/pi-ai-${version}.tgz";
-    hash = "sha256-L535UigItiHNNEmHZTfwPYqN+LjX7C1bGMapEKqFtJA=";
+    hash = "sha256-39PJKc7lpzhxmaCiTfwb4glvHqj1n/uChRmKDtAev5M=";
   };
 in
 buildNpmPackage {
@@ -88,9 +88,12 @@ buildNpmPackage {
 
   preBuild = ''
     python3 ${./pi-coding-agent/prepare-ai-build.py}
+    npm run build -w @earendil-works/pi-protocol
+    npm run build -w @earendil-works/pi-telemetry
     npm run build -w @earendil-works/pi-tui
     npm run build -w @earendil-works/pi-ai
     npm run build -w @earendil-works/pi-agent-core
+    npm run build -w @earendil-works/pi-client
   '';
 
   dontNpmInstall = true;

@@ -13,6 +13,7 @@ DEFAULT_PACKAGES=(
   pi-agent-browser-native
   pi-computer-use
   pi-diff-review
+  pi-coding-agent
   qmd
   xcodebuildmcp
 )
@@ -52,6 +53,57 @@ import urllib.request
 
 with urllib.request.urlopen(sys.argv[1]) as response:
     print(response.read().decode().strip())
+PY
+}
+
+# pi-coding-agent has three hashes (src, npm deps, pi-ai tgz) that nix-update
+# cannot handle, so bump it with a dedicated routine.
+bump_pi_coding_agent() {
+  local pkg_file="pkgs/pi-coding-agent.nix"
+  local latest
+  latest=$(latest_npm_version @earendil-works/pi-coding-agent)
+  local current
+  current=$(grep -oE 'version = "[0-9.]+' "$pkg_file" | head -1 | grep -oE '[0-9.]+')
+  if [[ "$latest" == "$current" ]]; then
+    return 0
+  fi
+  echo "==> pi-coding-agent: $current -> $latest"
+
+  local src_hash npm_hash pi_ai_hash
+  src_hash=$(nix-prefetch-url --unpack "https://github.com/earendil-works/pi/archive/refs/tags/v${latest}.tar.gz")
+  src_hash=$(nix hash convert --hash-algo sha256 --to sri "$src_hash")
+  curl -fsSL "https://raw.githubusercontent.com/earendil-works/pi/v${latest}/package-lock.json" -o /tmp/pi-package-lock.json
+  npm_hash=$(nix run nixpkgs#prefetch-npm-deps -- /tmp/pi-package-lock.json)
+  pi_ai_hash=$(nix-prefetch-url "https://registry.npmjs.org/@earendil-works/pi-ai/-/pi-ai-${latest}.tgz")
+  pi_ai_hash=$(nix hash convert --hash-algo sha256 --to sri "$pi_ai_hash")
+
+  python3 - "$pkg_file" "$latest" "$src_hash" "$npm_hash" "$pi_ai_hash" <<'PY'
+import re
+import sys
+
+path, version, src_hash, npm_hash, pi_ai_hash = sys.argv[1:6]
+with open(path) as f:
+    content = f.read()
+
+content = re.sub(r'version = "[0-9.]+"', f'version = "{version}"', content, count=1)
+content = re.sub(
+    r'(rev = "v\$\{version\}";\n\s*hash = )"sha256-[^"]*"',
+    rf'\1"{src_hash}"',
+    content,
+)
+content = re.sub(
+    r'piNpmDepsHash = "sha256-[^"]*"',
+    f'piNpmDepsHash = "{npm_hash}"',
+    content,
+)
+content = re.sub(
+    r'(pi-ai-\$\{version\}\.tgz";\n\s*hash = )"sha256-[^"]*"',
+    rf'\1"{pi_ai_hash}"',
+    content,
+)
+
+with open(path, "w") as f:
+    f.write(content)
 PY
 }
 
@@ -110,7 +162,11 @@ for pkg in "${PACKAGES[@]}"; do
   echo "==> checking ${pkg}"
   git diff --binary HEAD -- >"$successful_patch"
   update_flags=()
+  custom_bump=0
   case "$pkg" in
+    pi-coding-agent)
+      custom_bump=1
+      ;;
     claude-code)
       update_flags+=(--version "$(latest_text_version https://downloads.claude.ai/claude-code-releases/latest)")
       ;;
@@ -143,17 +199,26 @@ for pkg in "${PACKAGES[@]}"; do
       ;;
   esac
 
-  command=(nix run nixpkgs#nix-update -- -F --system "$AUTO_SYSTEM")
-  if [[ ${#update_flags[@]} -gt 0 ]]; then
-    command+=("${update_flags[@]}")
-  fi
-  command+=("$pkg")
+  if [[ $custom_bump -eq 1 ]]; then
+    if ! bump_pi_coding_agent; then
+      echo "warn: ${pkg} update failed" >&2
+      restore_successful_updates "$successful_patch"
+      failed=1
+      continue
+    fi
+  else
+    command=(nix run nixpkgs#nix-update -- -F --system "$AUTO_SYSTEM")
+    if [[ ${#update_flags[@]} -gt 0 ]]; then
+      command+=("${update_flags[@]}")
+    fi
+    command+=("$pkg")
 
-  if ! run_with_timeout "${command[@]}"; then
-    echo "warn: ${pkg} update failed" >&2
-    restore_successful_updates "$successful_patch"
-    failed=1
-    continue
+    if ! run_with_timeout "${command[@]}"; then
+      echo "warn: ${pkg} update failed" >&2
+      restore_successful_updates "$successful_patch"
+      failed=1
+      continue
+    fi
   fi
 
   git diff --binary HEAD -- >"$current_patch"

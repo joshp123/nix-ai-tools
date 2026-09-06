@@ -1,0 +1,22 @@
+diff --git a/packages/ai/src/utils/retry.ts b/packages/ai/src/utils/retry.ts
+--- a/packages/ai/src/utils/retry.ts
++++ b/packages/ai/src/utils/retry.ts
+@@ -226,5 +226,18 @@ export function isRetryableAssistantError(message: AssistantMessage): boolean {
+ 	if (message.stopReason !== "error" || !message.errorMessage) return false;
+ 	const errorMessage = message.errorMessage;
+ 	if (NON_RETRYABLE_PROVIDER_LIMIT_ERROR_PATTERN.test(errorMessage)) return false;
++	// Anthropic can return this before inference and accept the next attempt.
++	// Keep recovery within the caller's retry budget; never replay partial output.
++	// https://github.com/earendil-works/pi/issues/6763
++	if (
++		message.provider === "anthropic" &&
++		message.content.length === 0 &&
++		message.usage.totalTokens === 0 &&
++		errorMessage.startsWith("400 ") &&
++		errorMessage.includes("You're out of extra usage. Add more at claude.ai/settings/usage and keep going.")
++	) {
++		return true;
++	}
++
+ 	return RETRYABLE_PROVIDER_ERROR_PATTERN.test(errorMessage);
+ }

@@ -64,6 +64,8 @@ buildNpmPackage {
   inherit version src;
   inherit nodejs;
 
+  patches = [ ./pi-coding-agent/retry-anthropic-extra-usage.patch ];
+
   npmDepsHash = piNpmDepsHash;
   makeCacheWritable = true;
   npmInstallFlags = [

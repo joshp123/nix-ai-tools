@@ -46,17 +46,17 @@ let
     [ "npm_config_offline=\"false\"" ]
     (builtins.readFile "${path}/pkgs/build-support/node/build-npm-package/hooks/npm-config-hook.sh")
   ));
-  version = "0.84.4";
-  piNpmDepsHash = "sha256-35GC3Q4Jf4URvqoEYHeM63x49tTmrth62//PvKm4I7Q=";
+  version = "0.85.1";
+  piNpmDepsHash = "sha256-jzlsZIQzfl1FCZZ5//dHFWwMfBZQ4nRD6KB4HHifPqE=";
   src = fetchFromGitHub {
     owner = "earendil-works";
     repo = "pi";
     rev = "v${version}";
-    hash = "sha256-7z8OXao1PzmBEepDkIqVqyfQBPHulBlKcGymDYsnMvc=";
+    hash = "sha256-gU8BSiqqOYt2RRuQONHHGvZeSM5KFQVrwif9bmuUXUc=";
   };
   piAiRelease = fetchurl {
     url = "https://registry.npmjs.org/@earendil-works/pi-ai/-/pi-ai-${version}.tgz";
-    hash = "sha256-39PJKc7lpzhxmaCiTfwb4glvHqj1n/uChRmKDtAev5M=";
+    hash = "sha256-r30RmGF5RFzm/oizfVfeIvgjwP/TplyuMcVVt/XpklM=";
   };
 in
 buildNpmPackage {
@@ -86,17 +86,11 @@ buildNpmPackage {
   nativeBuildInputs = [ pkg-config python3 removeReferencesTo ];
   buildInputs = [ cairo freetype fontconfig giflib libjpeg libpng pango pixman ];
 
-  preBuild = ''
-    python3 ${./pi-coding-agent/prepare-ai-build.py}
-    npm run build -w @earendil-works/pi-protocol
-    npm run build -w @earendil-works/pi-telemetry
-    npm run build -w @earendil-works/pi-tui
-    npm run build -w @earendil-works/pi-ai
-    npm run build -w @earendil-works/pi-agent-core
-    npm run build -w @earendil-works/pi-client
-  '';
+  preBuild = "bash ${./pi-coding-agent/build-workspaces.sh} ${./pi-coding-agent/prepare-ai-build.py}";
 
   dontNpmInstall = true;
+
+  postInstall = "bash ${./pi-coding-agent/install-workspaces.sh} \"$packageOut\"";
 
   installPhase = ''
     runHook preInstall

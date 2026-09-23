@@ -1,13 +1,13 @@
 { lib, buildNpmPackage, fetchFromGitHub, nodejs, nodejs-slim_22, removeReferencesTo }:
 
 let
-  version = "2.7.0";
-  npmDepsHash = "sha256-PWvpblzfn0yM6hRmdJXzcqyegsytBRZGr0vJQYWdcuA=";
+  version = "2.7.1";
+  npmDepsHash = "sha256-NQawuFOack6oYf+mcuVlOy3ddysW4L2Qai6R8rqlg00=";
   src = fetchFromGitHub {
     owner = "cameroncooke";
     repo = "XcodeBuildMCP";
     rev = "v${version}";
-    hash = "sha256-9Vi67nXlX7JbQSbSv+z+60pfAq1NpZy+/U4mkWaSIas=";
+    hash = "sha256-ILc1y6LXN6F8JBoRVhR+GCEiFR0MNucqx3DEd9F9ogU=";
   };
   env = {
     CI = "1";

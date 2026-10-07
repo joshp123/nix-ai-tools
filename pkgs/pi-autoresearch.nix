@@ -4,7 +4,7 @@
 }:
 
 let
-  version = "1.8.1";
+  version = "1.9.0";
 in
 stdenvNoCC.mkDerivation {
   pname = "pi-autoresearch";
@@ -14,7 +14,7 @@ stdenvNoCC.mkDerivation {
     owner = "davebcn87";
     repo = "pi-autoresearch";
     rev = "v${version}";
-    hash = "sha256-QnkFwHPZ55hKuoMvkqph9y3//hAO5UCme6bFjiWIN5U=";
+    hash = "sha256-1Pc5pTjWOt00QDu/lRmhSJrpolzBAy5PiFDmGItZY8Y=";
   };
 
   dontBuild = true;

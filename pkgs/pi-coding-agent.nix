@@ -46,17 +46,17 @@ let
     [ "npm_config_offline=\"false\"" ]
     (builtins.readFile "${path}/pkgs/build-support/node/build-npm-package/hooks/npm-config-hook.sh")
   ));
-  version = "0.87.1";
-  piNpmDepsHash = "sha256-JBIYoP2vvRNz1HONNvDJ1U3c+nmCJ7/VgNthRTkrkIA=";
+  version = "1.1.0";
+  piNpmDepsHash = "sha256-GOh5WG+rRgzoy/yVHY5PoEKJZGQcEGhISrDDJxkP8W4=";
   src = fetchFromGitHub {
     owner = "earendil-works";
     repo = "pi";
     rev = "v${version}";
-    hash = "sha256-GUhlq6t+l6iiViOZ0bkV28v3ZDqcLvEwpZpYZ5JAyDk=";
+    hash = "sha256-lwjspkMGrW+8Fl/yBEDEFsHZJA57OKOhmVQmi6zfej4=";
   };
   piAiRelease = fetchurl {
     url = "https://registry.npmjs.org/@earendil-works/pi-ai/-/pi-ai-${version}.tgz";
-    hash = "sha256-NbRDLyfMJmX4a+67mvajmxJRlwiDwwRL2L5PToxzHKA=";
+    hash = "sha256-bKqzPOxXSA7QLFf+N0KKAwp3zCoGYoFLQ1pc+JMq2Ck=";
   };
 in
 buildNpmPackage {
@@ -88,11 +88,9 @@ buildNpmPackage {
   nativeBuildInputs = [ pkg-config python3 removeReferencesTo ];
   buildInputs = [ cairo freetype fontconfig giflib libjpeg libpng pango pixman ];
 
-  preBuild = "bash ${./pi-coding-agent/build-workspaces.sh} ${./pi-coding-agent/prepare-ai-build.py}";
+  preBuild = "bash ${./pi-coding-agent/build-workspaces.sh}";
 
   dontNpmInstall = true;
-
-  postInstall = "bash ${./pi-coding-agent/install-workspaces.sh} \"$packageOut\"";
 
   installPhase = ''
     runHook preInstall
@@ -111,20 +109,7 @@ buildNpmPackage {
     mkdir -p "$packageOut/node_modules"
     cp -R node_modules/. "$packageOut/node_modules/"
 
-    rm -rf "$packageOut/node_modules/@earendil-works/pi-mom"
-    rm -rf "$packageOut/node_modules/@earendil-works/pi-proxy"
-    rm -rf "$packageOut/node_modules/@earendil-works/pi-web-ui"
-    rm -rf "$packageOut/node_modules/@earendil-works/pi"
-
-    rm -rf "$packageOut/node_modules/@earendil-works/pi-ai"
-    rm -rf "$packageOut/node_modules/@earendil-works/pi-agent-core"
-    rm -rf "$packageOut/node_modules/@earendil-works/pi-tui"
-    rm -rf "$packageOut/node_modules/@earendil-works/pi-coding-agent"
-
-    cp -R packages/ai "$packageOut/node_modules/@earendil-works/pi-ai"
-    cp -R packages/agent "$packageOut/node_modules/@earendil-works/pi-agent-core"
-    cp -R packages/tui "$packageOut/node_modules/@earendil-works/pi-tui"
-    cp -R packages/coding-agent "$packageOut/node_modules/@earendil-works/pi-coding-agent"
+    bash ${./pi-coding-agent/install-workspaces.sh} "$packageOut"
 
     find "$packageOut/node_modules" -xtype l -delete
 
@@ -141,7 +126,9 @@ buildNpmPackage {
 
     # node-gyp leaves the Node source path in native-addon build metadata.
     # It is not needed at runtime and otherwise retains about 482 MiB.
-    find "$out" -type f -exec remove-references-to -t "${srcOnly nodejs}" {} +
+    # Only touch files that contain the path: per-file re-signing on Darwin is
+    # slow across the ~33k files in node_modules.
+    { grep -rlFZ "${srcOnly nodejs}" "$out" || true; } | xargs -0r remove-references-to -t "${srcOnly nodejs}"
 
     runHook postInstall
   '';
@@ -151,7 +138,7 @@ buildNpmPackage {
       substituteInPlace "$file" \
         --replace-fail "${nodejs}/bin/node" "${nodejs-slim_22}/bin/node"
     done < <(grep -IlrF "${nodejs}/bin/node" "$out")
-    find "$out" -type f -exec remove-references-to -t "${nodejs}" {} +
+    { grep -rlFZ "${nodejs}" "$out" || true; } | xargs -0r remove-references-to -t "${nodejs}"
   '';
 
   npmWorkspace = "packages/coding-agent";

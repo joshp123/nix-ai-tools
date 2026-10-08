@@ -1,7 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-cp -R packages/chord "$1/node_modules/@earendil-works/chord"
-cp -R packages/protocol "$1/node_modules/@earendil-works/pi-protocol"
-cp -R packages/telemetry "$1/node_modules/@earendil-works/pi-telemetry"
-cp -R packages/client "$1/node_modules/@earendil-works/pi-client"
+# Replace workspace symlinks with copies of every published workspace package.
+for manifest in packages/*/package.json; do
+  dir=${manifest%/package.json}
+  name=$(node -p "const p = require('./$manifest'); p.private ? '' : p.name")
+  if [[ -z "$name" ]]; then
+    continue
+  fi
+  rm -rf "$1/node_modules/$name"
+  mkdir -p "$(dirname "$1/node_modules/$name")"
+  cp -R "$dir" "$1/node_modules/$name"
+done

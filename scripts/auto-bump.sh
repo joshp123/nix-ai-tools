@@ -107,6 +107,14 @@ with open(path, "w") as f:
 PY
 }
 
+# qmd's Bun dependencies live in a generated bun2nix file that must track the
+# bun.lock of whatever version nix-update just picked.
+regenerate_qmd_bun_deps() {
+  local src
+  src=$(nix build ".#qmd.src" --no-link --print-out-paths)
+  nix run --inputs-from . bun2nix -- -l "$src/bun.lock" -o pkgs/generated/qmd-bun2nix.nix
+}
+
 run_with_timeout() {
   "$@" &
   local pid=$!
@@ -215,6 +223,14 @@ for pkg in "${PACKAGES[@]}"; do
 
     if ! run_with_timeout "${command[@]}"; then
       echo "warn: ${pkg} update failed" >&2
+      restore_successful_updates "$successful_patch"
+      failed=1
+      continue
+    fi
+
+    if [[ "$pkg" == qmd ]] && ! git diff --quiet HEAD -- pkgs/qmd.nix \
+      && ! run_with_timeout regenerate_qmd_bun_deps; then
+      echo "warn: ${pkg} bun2nix regeneration failed" >&2
       restore_successful_updates "$successful_patch"
       failed=1
       continue

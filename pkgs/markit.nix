@@ -1,40 +1,25 @@
-{ lib, buildNpmPackage, fetchFromGitHub, nodejs, nodejs-slim_22, removeReferencesTo }:
+{ lib, rustPlatform, fetchFromGitHub }:
 
-let
-  version = "0.5.3";
+rustPlatform.buildRustPackage rec {
+  pname = "markit";
+  version = "0.6.1";
+
   src = fetchFromGitHub {
     owner = "Michaelliv";
     repo = "markit";
     rev = "v${version}";
-    hash = "sha256-7TDou6PJ04ZN0hmfOlXRUCLzIF5JNfUAGlyNVpcoUQg=";
+    hash = "sha256-Y2Ez2x29+RKO2Rv398kL6b3JIcqqfYF1RmmQ1ULnUsc=";
   };
-in
-buildNpmPackage {
-  pname = "markit";
-  inherit version src nodejs;
 
-  npmDepsHash = "sha256-+WqB0NV+d2YEHfnv2fuyMaqB3YI0vR3PcB6Bu4QUcK4=";
-  npmBuildScript = "build";
+  # Since 0.6 the conversion engine is Rust and the crate ships the same
+  # `markit` CLI as the npm shell, so build that directly. Cargo.lock lives
+  # under rust/, which nix-update can refresh through cargoHash on bumps.
+  sourceRoot = "${src.name}/rust";
 
-  # The upstream v0.5.0 tag ships an outdated package-lock.json. Use a lockfile
-  # regenerated from the tagged package.json so the build matches the published
-  # CLI behavior.
-  postPatch = ''
-    cp ${./markit-package-lock.json} package-lock.json
-  '';
+  cargoHash = "sha256-6+rqIU8IJ60xihPMmOZzZK4UZBAYRUkiCrQrOVfrxhA=";
 
-  env = { CI = "1"; };
-
-  nativeBuildInputs = [ removeReferencesTo ];
-  postFixup = ''
-    while IFS= read -r file; do
-      substituteInPlace "$file" \
-        --replace-fail "${nodejs}/bin/node" "${nodejs-slim_22}/bin/node"
-    done < <(grep -IlrF "${nodejs}/bin/node" "$out")
-    find "$out" -type f -exec remove-references-to -t "${nodejs}" {} +
-  '';
-
-  passthru.runtimeNode = nodejs-slim_22;
+  # The build sandbox's stdout is a pty, so color tests need NO_COLOR.
+  preCheck = "export NO_COLOR=1";
 
   meta = with lib; {
     description = "Convert documents and media to Markdown with layout-aware PDF support";

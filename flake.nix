@@ -45,7 +45,7 @@
             optional "claude-code" { claude-code = pkgs.callPackage ./pkgs/claude-code.nix {}; }
             // optional "codex" { codex = pkgs.callPackage ./pkgs/codex.nix {}; }
             // optional "dash-mcp-server" { dash-mcp-server = pkgs.callPackage ./pkgs/dash-mcp-server.nix {}; }
-            // optional "markit" { markit = pkgs.callPackage ./pkgs/markit.nix { nodejs = pkgs.nodejs_22; }; }
+            // optional "markit" { markit = pkgs.callPackage ./pkgs/markit.nix {}; }
             // optional "markitdown-base" { markitdown-base = markitdownBasePkg; }
             // optional "markitdown" { markitdown = pkgs.callPackage ./pkgs/markitdown.nix { markitdown-base = markitdownBasePkg; markitdown-ocr = markitdownOcrPkg; }; }
             // optional "markitdown-ocr" { markitdown-ocr = markitdownOcrPkg; }
@@ -98,7 +98,7 @@
           pi-diff-review = prev.callPackage ./pkgs/pi-diff-review.nix { nodejs = prev.nodejs_22; };
           pi-autoresearch = prev.callPackage ./pkgs/pi-autoresearch.nix {};
           dash-mcp-server = prev.callPackage ./pkgs/dash-mcp-server.nix {};
-          markit = prev.callPackage ./pkgs/markit.nix { nodejs = prev.nodejs_22; };
+          markit = prev.callPackage ./pkgs/markit.nix {};
           markitdown-base = markitdownBasePkg;
           markitdown = prev.callPackage ./pkgs/markitdown.nix { markitdown-base = markitdownBasePkg; markitdown-ocr = markitdownOcrPkg; };
           markitdown-ocr = markitdownOcrPkg;

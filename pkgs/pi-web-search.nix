@@ -2,11 +2,11 @@
 
 ((callPackage ./pi-package.nix {
   inherit pi-coding-agent;
-}) {
+}) rec {
   pname = "pi-web-search";
-  version = "1.3.1";
-  url = "https://registry.npmjs.org/pi-web-search/-/pi-web-search-1.3.1.tgz";
-  hash = "sha256-178Besvg0ClNikqGzwzE3K/jZicvNGSZoo+9Re9ACKs=";
+  version = "1.7.0";
+  url = "https://registry.npmjs.org/pi-web-search/-/pi-web-search-${version}.tgz";
+  hash = "sha256-+Ku4Hes13cN/pqA0Nzf+gLEF92X28u0Xdbuf1N3+uI0=";
 
   meta = with lib; {
     description = "Provider-native web search and URL context extension for Pi";

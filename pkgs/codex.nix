@@ -5,11 +5,11 @@
 
 stdenvNoCC.mkDerivation rec {
   pname = "codex";
-  version = "0.162.0";
+  version = "0.162.1";
 
   src = fetchurl {
     url = "https://github.com/openai/codex/releases/download/rust-v${version}/codex-aarch64-apple-darwin.tar.gz";
-    hash = "sha256-mOlBOhvRZ65XNyOTn/F45tRPG7IdXNqWDb6y+mX0kQQ=";
+    hash = "sha256-spOg/N2HGQCkTApPQKGqQBsx4ChU95Dr24vV0Rd/0f4=";
   };
 
   sourceRoot = ".";

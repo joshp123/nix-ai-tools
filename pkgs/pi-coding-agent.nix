@@ -88,8 +88,6 @@ buildNpmPackage {
   nativeBuildInputs = [ pkg-config python3 removeReferencesTo ];
   buildInputs = [ cairo freetype fontconfig giflib libjpeg libpng pango pixman ];
 
-  preBuild = "bash ${./pi-coding-agent/build-workspaces.sh}";
-
   dontNpmInstall = true;
 
   installPhase = ''
@@ -141,8 +139,9 @@ buildNpmPackage {
     { grep -rlFZ "${nodejs}" "$out" || true; } | xargs -0r remove-references-to -t "${nodejs}"
   '';
 
-  npmWorkspace = "packages/coding-agent";
-  npmBuildScript = "build";
+  # Upstream's root offline build compiles every workspace in order and uses
+  # the model data unpacked from the pi-ai release in postPatch.
+  npmBuildScript = "build:offline";
 
   passthru.runtimeNode = nodejs-slim_22;
 

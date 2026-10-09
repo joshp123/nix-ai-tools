@@ -17,6 +17,11 @@ DEFAULT_PACKAGES=(
   qmd
   xcodebuildmcp
 )
+# Built with pkgs/pi-package.nix; their npm lockfiles follow each bump.
+PI_PACKAGES=(
+  pi-web-search
+  pi-agent-browser-native
+)
 AUTO_SYSTEM=${AUTO_BUMP_SYSTEM:-aarch64-darwin}
 AUTO_BUILD=${AUTO_BUMP_BUILD:-}
 AUTO_TIMEOUT_SECONDS=${AUTO_BUMP_TIMEOUT_SECONDS:-600}
@@ -142,7 +147,7 @@ restore_successful_updates() {
 
   git restore --source=HEAD --staged --worktree -- .
   if [[ -s "$patch_file" ]]; then
-    git apply "$patch_file"
+    git apply --intent-to-add "$patch_file"
   fi
 }
 
@@ -231,6 +236,15 @@ for pkg in "${PACKAGES[@]}"; do
     if [[ "$pkg" == qmd ]] && ! git diff --quiet HEAD -- pkgs/qmd.nix \
       && ! run_with_timeout regenerate_qmd_bun_deps; then
       echo "warn: ${pkg} bun2nix regeneration failed" >&2
+      restore_successful_updates "$successful_patch"
+      failed=1
+      continue
+    fi
+
+    if [[ " ${PI_PACKAGES[*]} " == *" ${pkg} "* ]] \
+      && ! git diff --quiet HEAD -- "pkgs/${pkg}.nix" \
+      && ! run_with_timeout ./scripts/pi-package-lock.sh "$pkg"; then
+      echo "warn: ${pkg} npm lockfile regeneration failed" >&2
       restore_successful_updates "$successful_patch"
       failed=1
       continue

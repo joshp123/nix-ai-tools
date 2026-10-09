@@ -14,7 +14,8 @@
 , packageName ? pname
 , binEntries ? []
 , meta
-}:
+, ...
+}@args:
 
 let
   # Runtime npm dependencies are pinned in pkgs/<pname>/package-lock.json,
@@ -24,9 +25,7 @@ let
   npmDependencies = npmLock.packages."".dependencies or { };
   hasNpmDependencies = npmDependencies != { };
 in
-stdenvNoCC.mkDerivation {
-  inherit pname version meta;
-
+stdenvNoCC.mkDerivation (removeAttrs args [ "url" "hash" "packageName" ] // {
   src = fetchurl { inherit url hash; };
   dontUnpack = true;
 
@@ -43,4 +42,9 @@ stdenvNoCC.mkDerivation {
   runtimeNode = nodejs-slim_22;
 
   installPhase = builtins.readFile ./pi-package/install.sh;
-}
+
+  # Publish only extensions Pi can load: building is not enough.
+  doInstallCheck = true;
+  piBin = "${pi-coding-agent}/bin/pi";
+  installCheckPhase = builtins.readFile ./pi-package/install-check.sh;
+})

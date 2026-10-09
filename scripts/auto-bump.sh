@@ -21,6 +21,7 @@ DEFAULT_PACKAGES=(
 PI_PACKAGES=(
   pi-web-search
   pi-agent-browser-native
+  pi-computer-use
 )
 AUTO_SYSTEM=${AUTO_BUMP_SYSTEM:-aarch64-darwin}
 AUTO_BUILD=${AUTO_BUMP_BUILD:-}

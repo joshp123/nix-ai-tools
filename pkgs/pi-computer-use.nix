@@ -1,26 +1,15 @@
-{ lib
-, stdenvNoCC
-, fetchurl
-, pi-coding-agent
-}:
+{ lib, callPackage, pi-coding-agent }:
 
-let
-  version = "0.5.1";
-in
-stdenvNoCC.mkDerivation {
+((callPackage ./pi-package.nix {
+  inherit pi-coding-agent;
+}) rec {
   pname = "pi-computer-use";
-  inherit version;
+  version = "0.5.1";
+  url = "https://registry.npmjs.org/@injaneity/pi-computer-use/-/pi-computer-use-${version}.tgz";
+  hash = "sha256-7H//RaP+u6srXDAtsRcfXxDWyoWqzYkqn0IgKCRty3k=";
 
-  src = fetchurl {
-    url = "https://registry.npmjs.org/@injaneity/pi-computer-use/-/pi-computer-use-${version}.tgz";
-    hash = "sha256-7H//RaP+u6srXDAtsRcfXxDWyoWqzYkqn0IgKCRty3k=";
-  };
-  dontUnpack = true;
   outputs = [ "out" "helper" ];
-
-  piPeerNodeModules = "${pi-coding-agent}/lib/node_modules/@earendil-works/pi-coding-agent/node_modules";
-
-  installPhase = builtins.readFile ./pi-computer-use/install.sh;
+  postInstall = builtins.readFile ./pi-computer-use/install-helper.sh;
 
   meta = with lib; {
     description = "Pi extension for grounded native desktop computer use";
@@ -28,4 +17,4 @@ stdenvNoCC.mkDerivation {
     license = licenses.mit;
     platforms = platforms.darwin;
   };
-}
+})

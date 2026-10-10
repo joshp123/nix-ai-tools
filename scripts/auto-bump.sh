@@ -2,9 +2,11 @@
 set -euo pipefail
 
 DEFAULT_PACKAGES=(
+  agent-browser
   claude-code
   codex
   dash-mcp-server
+  herdr
   markit
   markitdown-base
   markitdown-ocr
@@ -108,6 +110,32 @@ content = re.sub(
     content,
 )
 
+with open(path, "w") as f:
+    f.write(content)
+PY
+}
+
+# herdr ships its pi integration as a second fetchurl pinned to the release
+# tag; nix-update only moves src, so refresh that hash after a bump.
+bump_herdr_integration() {
+  local pkg_file="pkgs/herdr.nix"
+  local version
+  version=$(grep -oE 'version = "[0-9.]+' "$pkg_file" | head -1 | grep -oE '[0-9.]+')
+  local hash
+  hash=$(nix-prefetch-url "https://raw.githubusercontent.com/ogulcancelik/herdr/v${version}/src/integration/assets/pi/herdr-agent-state.ts")
+  hash=$(nix hash convert --hash-algo sha256 --to sri "$hash")
+  python3 - "$pkg_file" "$hash" <<'PY'
+import re
+import sys
+
+path, new_hash = sys.argv[1:3]
+with open(path) as f:
+    content = f.read()
+content = re.sub(
+    r'(herdr-agent-state\.ts";\n\s*hash = )"sha256-[^"]*"',
+    rf'\1"{new_hash}"',
+    content,
+)
 with open(path, "w") as f:
     f.write(content)
 PY
@@ -234,6 +262,14 @@ for pkg in "${PACKAGES[@]}"; do
       continue
     fi
 
+    if [[ "$pkg" == herdr ]] && ! git diff --quiet HEAD -- pkgs/herdr.nix \
+      && ! run_with_timeout bump_herdr_integration; then
+      echo "warn: ${pkg} pi integration hash refresh failed" >&2
+      restore_successful_updates "$successful_patch"
+      failed=1
+      continue
+    fi
+
     if [[ "$pkg" == qmd ]] && ! git diff --quiet HEAD -- pkgs/qmd.nix \
       && ! run_with_timeout regenerate_qmd_bun_deps; then
       echo "warn: ${pkg} bun2nix regeneration failed" >&2
@@ -266,6 +302,18 @@ done
 
 if ! git diff --quiet; then
   updated=1
+fi
+
+# A bump of pi-coding-agent changes every pi package that builds against it.
+# Build the whole workstation set so the cache push at the end of the CI job
+# covers dependents too, not only the packages that were bumped.
+if [[ -n "$AUTO_BUILD" && $updated -eq 1 ]]; then
+  echo "==> building the complete workstation set"
+  mapfile -t workstation_attrs < <(sed 's|^|.#|' scripts/workstation-packages.txt)
+  if ! nix build --no-link -L "${workstation_attrs[@]}"; then
+    echo "warn: workstation set build failed; dependents may be missing from the cache" >&2
+    failed=1
+  fi
 fi
 
 if [[ -n "${GITHUB_OUTPUT:-}" ]]; then

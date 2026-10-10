@@ -36,20 +36,7 @@ jobs:
         run: |
           set -o pipefail
           nix build --no-link --print-out-paths -L \
-            .#agent-browser \
-            .#cass \
-            .#cm \
-            .#dash-mcp-server \
-            .#herdr \
-            .#markit \
-            .#markitdown \
-            .#pi-agent-browser-native \
-            .#pi-coding-agent \
-            .#pi-computer-use \
-            .#pi-web-search \
-            .#qmd \
-            .#spogo \
-            .#xcodebuildmcp \
+            $(sed 's|^|.#|' scripts/workstation-packages.txt) \
             | tee "$RUNNER_TEMP/workstation-output-paths"
 
       - name: Publish the complete package set

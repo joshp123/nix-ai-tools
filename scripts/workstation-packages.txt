@@ -1,0 +1,17 @@
+agent-browser
+cass
+claude-code
+cm
+codex
+dash-mcp-server
+herdr
+markit
+markitdown
+pi-agent-browser-native
+pi-autoresearch
+pi-coding-agent
+pi-computer-use
+pi-web-search
+qmd
+spogo
+xcodebuildmcp

@@ -18,8 +18,8 @@
         cass = [ "aarch64-darwin" "x86_64-linux" "aarch64-linux" ];
         cm = [ "aarch64-darwin" "x86_64-linux" "aarch64-linux" ];
         qmd = [ "aarch64-darwin" "x86_64-darwin" ];
-        herdr = [ "aarch64-darwin" "x86_64-darwin" "aarch64-linux" "x86_64-linux" ];
-        agent-browser = [ "aarch64-darwin" "x86_64-darwin" "aarch64-linux" "x86_64-linux" ];
+        herdr = [ "aarch64-darwin" ];
+        agent-browser = [ "aarch64-darwin" ];
         pi-computer-use = [ "aarch64-darwin" "x86_64-darwin" ];
       };
 

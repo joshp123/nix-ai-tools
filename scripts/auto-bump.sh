@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# pi-coding-agent goes first: the pi packages below build against it, so their
+# own bump builds already see the new Pi.
 DEFAULT_PACKAGES=(
+  pi-coding-agent
   agent-browser
   claude-code
   codex
@@ -15,7 +18,6 @@ DEFAULT_PACKAGES=(
   pi-agent-browser-native
   pi-computer-use
   pi-diff-review
-  pi-coding-agent
   qmd
   xcodebuildmcp
 )
@@ -305,14 +307,30 @@ if ! git diff --quiet; then
 fi
 
 # A bump of pi-coding-agent changes every pi package that builds against it.
-# Build the whole workstation set so the cache push at the end of the CI job
-# covers dependents too, not only the packages that were bumped.
+# The whole workstation set must build before anything is published, so the
+# cache push at the end of the CI job covers dependents too. If it does not,
+# drop the pi-coding-agent bump (the only package with dependents) and try
+# once more; if the set still fails, publish nothing this round.
+build_workstation_set() {
+  local attrs
+  mapfile -t attrs < <(sed 's|^|.#|' scripts/workstation-packages.txt)
+  nix build --no-link -L "${attrs[@]}"
+}
+
 if [[ -n "$AUTO_BUILD" && $updated -eq 1 ]]; then
   echo "==> building the complete workstation set"
-  mapfile -t workstation_attrs < <(sed 's|^|.#|' scripts/workstation-packages.txt)
-  if ! nix build --no-link -L "${workstation_attrs[@]}"; then
-    echo "warn: workstation set build failed; dependents may be missing from the cache" >&2
+  if ! build_workstation_set; then
     failed=1
+    if ! git diff --quiet HEAD -- pkgs/pi-coding-agent.nix; then
+      echo "warn: workstation set failed; discarding the pi-coding-agent bump and retrying" >&2
+      git checkout HEAD -- pkgs/pi-coding-agent.nix
+    fi
+    if git diff --quiet HEAD -- pkgs/pi-coding-agent.nix && ! build_workstation_set; then
+      echo "error: workstation set still fails; publishing nothing this round" >&2
+      git restore --source=HEAD --staged --worktree -- .
+      git clean -fdq -- pkgs
+      updated=0
+    fi
   fi
 fi
 
@@ -335,4 +353,8 @@ else
   echo "no updates"
 fi
 
+# Nothing published and something failed: fail the job so the failure is seen.
+if [[ $updated -eq 0 && $failed -eq 1 ]]; then
+  exit 1
+fi
 exit 0

@@ -3,6 +3,7 @@ cass
 claude-code
 cm
 codex
+cua-driver
 dash-mcp-server
 herdr
 markit
@@ -10,7 +11,6 @@ markitdown
 pi-agent-browser-native
 pi-autoresearch
 pi-coding-agent
-pi-computer-use
 pi-web-search
 qmd
 spogo

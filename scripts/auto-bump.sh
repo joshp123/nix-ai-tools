@@ -8,6 +8,7 @@ DEFAULT_PACKAGES=(
   agent-browser
   claude-code
   codex
+  cua-driver
   dash-mcp-server
   herdr
   markit
@@ -16,7 +17,6 @@ DEFAULT_PACKAGES=(
   pi-autoresearch
   pi-web-search
   pi-agent-browser-native
-  pi-computer-use
   pi-diff-review
   qmd
   xcodebuildmcp
@@ -25,7 +25,6 @@ DEFAULT_PACKAGES=(
 PI_PACKAGES=(
   pi-web-search
   pi-agent-browser-native
-  pi-computer-use
 )
 AUTO_SYSTEM=${AUTO_BUMP_SYSTEM:-aarch64-darwin}
 AUTO_BUILD=${AUTO_BUMP_BUILD:-}
@@ -143,6 +142,45 @@ with open(path, "w") as f:
 PY
 }
 
+# cua-driver releases are GitHub pre-releases and the repo's "Latest" release is
+# another product, so take the newest cua-driver-rs-v* tag that upstream has
+# not withdrawn (one x.y.z per line, "#" starts a comment).
+latest_cua_driver_version() {
+  local withdrawn
+  withdrawn=$(curl -fsSL https://raw.githubusercontent.com/trycua/cua/main/.github/release-state/cua-driver-rs-withdrawn-versions \
+    | sed 's/#.*//' | tr -s '[:space:]' '\n' | grep -E '^[0-9]' || true)
+  git ls-remote --tags --refs https://github.com/trycua/cua 'refs/tags/cua-driver-rs-v*' \
+    | sed -n 's|.*refs/tags/cua-driver-rs-v\([0-9][0-9.]*\)$|\1|p' \
+    | grep -vxF -f <(printf '%s\n' "${withdrawn:-none}") \
+    | sort -V | tail -1
+}
+
+# cua-driver ships its skill pack as a second release asset at the same
+# version; nix-update only moves src, so refresh that hash after a bump.
+bump_cua_driver_skills() {
+  local pkg_file="pkgs/cua-driver.nix"
+  local version
+  version=$(grep -oE 'version = "[0-9.]+' "$pkg_file" | head -1 | grep -oE '[0-9.]+')
+  local hash
+  hash=$(nix-prefetch-url "https://github.com/trycua/cua/releases/download/cua-driver-rs-v${version}/cua-driver-rs-v${version}-skills.tar.gz")
+  hash=$(nix hash convert --hash-algo sha256 --to sri "$hash")
+  python3 - "$pkg_file" "$hash" <<'PY'
+import re
+import sys
+
+path, new_hash = sys.argv[1:3]
+with open(path) as f:
+    content = f.read()
+content = re.sub(
+    r'(-skills\.tar\.gz";\n\s*hash = )"sha256-[^"]*"',
+    rf'\1"{new_hash}"',
+    content,
+)
+with open(path, "w") as f:
+    f.write(content)
+PY
+}
+
 # qmd's Bun dependencies live in a generated bun2nix file that must track the
 # bun.lock of whatever version nix-update just picked.
 regenerate_qmd_bun_deps() {
@@ -217,6 +255,9 @@ for pkg in "${PACKAGES[@]}"; do
     codex)
       update_flags+=(--version "$(latest_npm_version @openai/codex)")
       ;;
+    cua-driver)
+      update_flags+=(--version "$(latest_cua_driver_version)")
+      ;;
     dash-mcp-server)
       update_flags+=(--version branch)
       ;;
@@ -237,9 +278,6 @@ for pkg in "${PACKAGES[@]}"; do
       ;;
     pi-agent-browser-native)
       update_flags+=(--version "$(latest_npm_version pi-agent-browser-native)" --override-filename pkgs/pi-agent-browser-native.nix)
-      ;;
-    pi-computer-use)
-      update_flags+=(--version "$(latest_npm_version @injaneity/pi-computer-use)" --override-filename pkgs/pi-computer-use.nix)
       ;;
   esac
 
@@ -272,7 +310,15 @@ for pkg in "${PACKAGES[@]}"; do
       continue
     fi
 
-    if [[ "$pkg" == qmd ]] && ! git diff --quiet HEAD -- pkgs/qmd.nix \
+    if [[ "$pkg" == cua-driver ]] && ! git diff --quiet HEAD -- pkgs/cua-driver.nix \
+      && ! run_with_timeout bump_cua_driver_skills; then
+      echo "warn: ${pkg} skill pack hash refresh failed" >&2
+      restore_successful_updates "$successful_patch"
+      failed=1
+      continue
+    fi
+
+    if [[ "$pkg" == qmd ]] &&! git diff --quiet HEAD -- pkgs/qmd.nix \
       && ! run_with_timeout regenerate_qmd_bun_deps; then
       echo "warn: ${pkg} bun2nix regeneration failed" >&2
       restore_successful_updates "$successful_patch"

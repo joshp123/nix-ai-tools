@@ -20,7 +20,7 @@
         qmd = [ "aarch64-darwin" "x86_64-darwin" ];
         herdr = [ "aarch64-darwin" ];
         agent-browser = [ "aarch64-darwin" ];
-        pi-computer-use = [ "aarch64-darwin" "x86_64-darwin" ];
+        cua-driver = [ "aarch64-darwin" ];
       };
 
       supports = system: name: lib.elem system (packageSystems.${name} or systems);
@@ -59,9 +59,9 @@
             // optional "cm" (if cassPkg != null then { cm = pkgs.callPackage ./pkgs/cm.nix { cass = cassPkg; }; } else {})
             // optional "herdr" { herdr = pkgs.callPackage ./pkgs/herdr.nix {}; }
             // optional "agent-browser" { agent-browser = pkgs.callPackage ./pkgs/agent-browser.nix {}; }
+            // optional "cua-driver" { cua-driver = pkgs.callPackage ./pkgs/cua-driver.nix {}; }
             // optional "pi-web-search" { pi-web-search = pkgs.callPackage ./pkgs/pi-web-search.nix { pi-coding-agent = piPkg; }; }
             // optional "pi-agent-browser-native" { pi-agent-browser-native = pkgs.callPackage ./pkgs/pi-agent-browser-native.nix { pi-coding-agent = piPkg; }; }
-            // optional "pi-computer-use" { pi-computer-use = pkgs.callPackage ./pkgs/pi-computer-use.nix { pi-coding-agent = piPkg; }; }
             // { default = piPkg; };
         in lib.removeAttrs pkgSet [ "override" "overrideDerivation" ];
 
@@ -109,9 +109,9 @@
           cm = prev.callPackage ./pkgs/cm.nix { cass = cassPkg; };
           herdr = prev.callPackage ./pkgs/herdr.nix {};
           agent-browser = prev.callPackage ./pkgs/agent-browser.nix {};
+          cua-driver = prev.callPackage ./pkgs/cua-driver.nix {};
           pi-web-search = prev.callPackage ./pkgs/pi-web-search.nix { pi-coding-agent = final.pi-coding-agent; };
           pi-agent-browser-native = prev.callPackage ./pkgs/pi-agent-browser-native.nix { pi-coding-agent = final.pi-coding-agent; };
-          pi-computer-use = prev.callPackage ./pkgs/pi-computer-use.nix { pi-coding-agent = final.pi-coding-agent; };
         };
 
       checks = self.packages;

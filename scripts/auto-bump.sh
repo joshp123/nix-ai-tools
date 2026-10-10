@@ -144,15 +144,19 @@ PY
 
 # cua-driver releases are GitHub pre-releases and the repo's "Latest" release is
 # another product, so take the newest cua-driver-rs-v* tag that upstream has
-# not withdrawn (one x.y.z per line, "#" starts a comment).
+# not withdrawn (one x.y.z per line, "#" starts a comment). Fails when either
+# list cannot be read: an unread withdrawn list must never count as empty.
+# Called as an if condition, where errexit is off, so each step is checked.
 latest_cua_driver_version() {
-  local withdrawn
-  withdrawn=$(curl -fsSL https://raw.githubusercontent.com/trycua/cua/main/.github/release-state/cua-driver-rs-withdrawn-versions \
-    | sed 's/#.*//' | tr -s '[:space:]' '\n' | grep -E '^[0-9]' || true)
-  git ls-remote --tags --refs https://github.com/trycua/cua 'refs/tags/cua-driver-rs-v*' \
+  local list withdrawn version
+  list=$(curl -fsSL https://raw.githubusercontent.com/trycua/cua/main/.github/release-state/cua-driver-rs-withdrawn-versions) || return 1
+  withdrawn=$(printf '%s\n' "$list" | sed 's/#.*//' | tr -s '[:space:]' '\n' | grep -E '^[0-9]' || true)
+  version=$(git ls-remote --tags --refs https://github.com/trycua/cua 'refs/tags/cua-driver-rs-v*' \
     | sed -n 's|.*refs/tags/cua-driver-rs-v\([0-9][0-9.]*\)$|\1|p' \
-    | grep -vxF -f <(printf '%s\n' "${withdrawn:-none}") \
-    | sort -V | tail -1
+    | { grep -vxF -f <(printf '%s\n' "${withdrawn:-none}") || true; } \
+    | sort -V | tail -1) || return 1
+  [[ -n "$version" ]] || return 1
+  printf '%s\n' "$version"
 }
 
 # cua-driver ships its skill pack as a second release asset at the same
@@ -256,7 +260,11 @@ for pkg in "${PACKAGES[@]}"; do
       update_flags+=(--version "$(latest_npm_version @openai/codex)")
       ;;
     cua-driver)
-      update_flags+=(--version "$(latest_cua_driver_version)")
+      if ! cua_driver_version=$(latest_cua_driver_version); then
+        echo "warn: could not read cua-driver's releases or withdrawn-versions list; skipping cua-driver this round" >&2
+        continue
+      fi
+      update_flags+=(--version "$cua_driver_version")
       ;;
     dash-mcp-server)
       update_flags+=(--version branch)
@@ -318,7 +326,7 @@ for pkg in "${PACKAGES[@]}"; do
       continue
     fi
 
-    if [[ "$pkg" == qmd ]] &&! git diff --quiet HEAD -- pkgs/qmd.nix \
+    if [[ "$pkg" == qmd ]] && ! git diff --quiet HEAD -- pkgs/qmd.nix \
       && ! run_with_timeout regenerate_qmd_bun_deps; then
       echo "warn: ${pkg} bun2nix regeneration failed" >&2
       restore_successful_updates "$successful_patch"

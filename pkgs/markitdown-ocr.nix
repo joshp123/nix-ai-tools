@@ -21,7 +21,7 @@ let
 in
 python3Packages.buildPythonPackage rec {
   pname = "markitdown-ocr";
-  version = "0.1.1";
+  version = "0.1.2";
   format = "wheel";
 
   src = fetchurl {

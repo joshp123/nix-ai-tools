@@ -6,11 +6,11 @@
 
 stdenvNoCC.mkDerivation rec {
   pname = "claude-code";
-  version = "2.1.309";
+  version = "2.1.310";
 
   src = fetchurl {
     url = "https://downloads.claude.ai/claude-code-releases/${version}/darwin-arm64/claude";
-    hash = "sha256-Xq3AAJzc28DQblgRDXsrr4jO1giLHDOmCiEhf+QQYZw=";
+    hash = "sha256-/7ZDMbwO4bae+3wsQovTq1Frwxt1v2CIazVsl8HCX/0=";
   };
 
   dontUnpack = true;

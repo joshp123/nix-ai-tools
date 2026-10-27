@@ -6,7 +6,7 @@
 # One release binary per package so nix-update can bump the hash; CI, the
 # workstation and the Mac mini are all aarch64-darwin.
 let
-  version = "0.39.4";
+  version = "0.40.0";
 in
 stdenvNoCC.mkDerivation {
   pname = "agent-browser";
@@ -14,7 +14,7 @@ stdenvNoCC.mkDerivation {
 
   src = fetchurl {
     url = "https://github.com/vercel-labs/agent-browser/releases/download/v${version}/agent-browser-darwin-arm64";
-    hash = "sha256-AxfONRcpBcd1wls5ORS8JZcBpGSHequXU+yIlvbji/c=";
+    hash = "sha256-sGTJEHoEMcdtiRbkfCyKwyL0nCsnINbJA2q1OOwe2RE=";
   };
   dontUnpack = true;
 

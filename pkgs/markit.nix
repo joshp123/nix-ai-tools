@@ -2,13 +2,13 @@
 
 rustPlatform.buildRustPackage rec {
   pname = "markit";
-  version = "0.7.0";
+  version = "0.7.1";
 
   src = fetchFromGitHub {
     owner = "Michaelliv";
     repo = "markit";
     rev = "v${version}";
-    hash = "sha256-nJXuXMkOQPyjIbLL84/5eMVQc2dKjr1gBgVLJbLsH8k=";
+    hash = "sha256-RsZL26a1WMDR4sp6Q+aiwAvzUBXx18eUMv/xAfRN03c=";
   };
 
   # Since 0.6 the conversion engine is Rust and the crate ships the same
@@ -16,7 +16,7 @@ rustPlatform.buildRustPackage rec {
   # under rust/, which nix-update can refresh through cargoHash on bumps.
   sourceRoot = "${src.name}/rust";
 
-  cargoHash = "sha256-XDnyP+dAaab7gxRLgF86FtZ3id1k5T7DYnPDFJkxD7U=";
+  cargoHash = "sha256-qc75jxoiEuCe4ZQIG9DevAr3jyneekOyPZwcpBxDskE=";
 
   # The build sandbox's stdout is a pty, so color tests need NO_COLOR.
   preCheck = "export NO_COLOR=1";

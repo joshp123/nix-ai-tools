@@ -9,11 +9,11 @@
 # version. Driver releases are GitHub pre-releases: auto-bump passes the newest
 # cua-driver-rs-v* tag explicitly and refreshes the skills hash itself.
 let
-  version = "0.47.5";
+  version = "0.47.7";
   releaseUrl = "https://github.com/trycua/cua/releases/download/cua-driver-rs-v${version}";
   skills = fetchurl {
     url = "${releaseUrl}/cua-driver-rs-v${version}-skills.tar.gz";
-    hash = "sha256-nXQk/W8yk/sV+Yvcd+1K+NQIIQ7pqt9X9F/brt45SmM=";
+    hash = "sha256-kLj5aMNbj+Q3K4thaplqzvNhorD2u7OToDqgkfXHhtc=";
   };
 in
 stdenvNoCC.mkDerivation {
@@ -22,7 +22,7 @@ stdenvNoCC.mkDerivation {
 
   src = fetchurl {
     url = "${releaseUrl}/cua-driver-rs-${version}-darwin-arm64.tar.gz";
-    hash = "sha256-gPFXv13bcA4lPlDKdO5q5/cD/R2XH9BXPy7+Rlqj4AY=";
+    hash = "sha256-6m9QhfuPPCkqWMqMnwhVPLDJ98jF+mR1qnLDJyos6Do=";
   };
 
   dontConfigure = true;

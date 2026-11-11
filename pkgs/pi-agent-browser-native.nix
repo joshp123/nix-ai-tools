@@ -4,9 +4,9 @@
   inherit pi-coding-agent;
 }) rec {
   pname = "pi-agent-browser-native";
-  version = "0.9.18";
+  version = "0.9.20";
   url = "https://registry.npmjs.org/pi-agent-browser-native/-/pi-agent-browser-native-${version}.tgz";
-  hash = "sha256-8j16prlU4BLEbVbNr5tv7KH5M/UPGkOuXzU6tdfkv7c=";
+  hash = "sha256-OAT4NNYQ+Dy5bEH4oF8/+F1q4Q3b6DXagbsiewLJbGw=";
   binEntries = [
     "pi-agent-browser-config:scripts/config.mjs"
     "pi-agent-browser-doctor:scripts/doctor.mjs"

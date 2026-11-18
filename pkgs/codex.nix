@@ -5,13 +5,13 @@
 
 stdenvNoCC.mkDerivation rec {
   pname = "codex";
-  version = "0.169.1";
+  version = "0.170.0";
 
   src = fetchurl {
     # The package layout ships codex-code-mode-host, which the shell tool spawns
     # from the directory codex was invoked from, plus the bundled rg.
     url = "https://github.com/openai/codex/releases/download/rust-v${version}/codex-package-aarch64-apple-darwin.tar.gz";
-    hash = "sha256-HznQ3FH1UQPYsEMzLgs9ulOzUpU5KJmpEadxSkw0Lc0=";
+    hash = "sha256-l1UkvxOu3RsSLY0OAMCe5nCRuPaIwLN0lD27PPIseJM=";
   };
 
   sourceRoot = ".";

@@ -82,7 +82,7 @@ bump_pi_coding_agent() {
   src_hash=$(nix-prefetch-url --unpack "https://github.com/earendil-works/pi/archive/refs/tags/v${latest}.tar.gz")
   src_hash=$(nix hash convert --hash-algo sha256 --to sri "$src_hash")
   curl -fsSL "https://raw.githubusercontent.com/earendil-works/pi/v${latest}/package-lock.json" -o /tmp/pi-package-lock.json
-  npm_hash=$(nix run nixpkgs#prefetch-npm-deps -- /tmp/pi-package-lock.json)
+  npm_hash=$(nix run --inputs-from . nixpkgs#prefetch-npm-deps -- /tmp/pi-package-lock.json)
   pi_ai_hash=$(nix-prefetch-url "https://registry.npmjs.org/@earendil-works/pi-ai/-/pi-ai-${latest}.tgz")
   pi_ai_hash=$(nix hash convert --hash-algo sha256 --to sri "$pi_ai_hash")
 
@@ -297,7 +297,7 @@ for pkg in "${PACKAGES[@]}"; do
       continue
     fi
   else
-    command=(nix run nixpkgs#nix-update -- -F --system "$AUTO_SYSTEM")
+    command=(nix run --inputs-from . nixpkgs#nix-update -- -F --system "$AUTO_SYSTEM")
     if [[ ${#update_flags[@]} -gt 0 ]]; then
       command+=("${update_flags[@]}")
     fi

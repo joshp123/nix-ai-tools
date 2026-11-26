@@ -28,6 +28,7 @@ bun2nix.writeBunApplication {
     bunNix = ./generated/qmd-bun2nix.nix;
   };
 
+  dontRunLifecycleScripts = true;
   dontUseBunBuild = true;
   dontUseBunCheck = true;
   startScript = ''

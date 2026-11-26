@@ -25,62 +25,8 @@
 
       supports = system: name: lib.elem system (packageSystems.${name} or systems);
 
-      mkPackages = pkgs:
+      mkPackageSet = final: prev:
         let
-          system = pkgs.stdenv.hostPlatform.system;
-          optional = name: value: lib.optionalAttrs (supports system name) value;
-          cassPkg = if supports system "cass" then pkgs.callPackage ./pkgs/cass.nix {} else null;
-          markitdownPythonPackages = import ./pkgs/markitdown-python-packages.nix {
-            inherit (pkgs) ffmpeg-headless python3Packages;
-          };
-          markitdownBasePkg = pkgs.callPackage ./pkgs/markitdown-base.nix {
-            python3Packages = markitdownPythonPackages;
-          };
-          markitdownOcrPkg = pkgs.callPackage ./pkgs/markitdown-ocr.nix {
-            python3Packages = markitdownPythonPackages;
-            markitdown-base = markitdownBasePkg;
-          };
-          piPkg = pkgs.callPackage ./pkgs/pi-coding-agent.nix { inherit (pkgs) path; };
-          pkgSet =
-            optional "claude-code" { claude-code = pkgs.callPackage ./pkgs/claude-code.nix {}; }
-            // optional "codex" { codex = pkgs.callPackage ./pkgs/codex.nix {}; }
-            // optional "dash-mcp-server" { dash-mcp-server = pkgs.callPackage ./pkgs/dash-mcp-server.nix {}; }
-            // optional "markit" { markit = pkgs.callPackage ./pkgs/markit.nix {}; }
-            // optional "markitdown-base" { markitdown-base = markitdownBasePkg; }
-            // optional "markitdown" { markitdown = pkgs.callPackage ./pkgs/markitdown.nix { markitdown-base = markitdownBasePkg; markitdown-ocr = markitdownOcrPkg; }; }
-            // optional "markitdown-ocr" { markitdown-ocr = markitdownOcrPkg; }
-            // optional "xcodebuildmcp" { xcodebuildmcp = pkgs.callPackage ./pkgs/xcodebuildmcp.nix { nodejs = pkgs.nodejs_22; }; }
-            // optional "spogo" { spogo = pkgs.callPackage ./pkgs/spogo.nix {}; }
-            // optional "pi-coding-agent" { pi-coding-agent = piPkg; }
-            // optional "pi-diff-review" { pi-diff-review = pkgs.callPackage ./pkgs/pi-diff-review.nix { nodejs = pkgs.nodejs_22; }; }
-            // optional "pi-autoresearch" { pi-autoresearch = pkgs.callPackage ./pkgs/pi-autoresearch.nix {}; }
-            // optional "qmd" { qmd = pkgs.callPackage ./pkgs/qmd.nix { inherit (pkgs) bun2nix; }; }
-            // optional "cass" (if cassPkg != null then { cass = cassPkg; } else {})
-            // optional "cm" (if cassPkg != null then { cm = pkgs.callPackage ./pkgs/cm.nix { cass = cassPkg; }; } else {})
-            // optional "herdr" { herdr = pkgs.callPackage ./pkgs/herdr.nix {}; }
-            // optional "agent-browser" { agent-browser = pkgs.callPackage ./pkgs/agent-browser.nix {}; }
-            // optional "cua-driver" { cua-driver = pkgs.callPackage ./pkgs/cua-driver.nix {}; }
-            // optional "pi-web-search" { pi-web-search = pkgs.callPackage ./pkgs/pi-web-search.nix { pi-coding-agent = piPkg; }; }
-            // optional "pi-agent-browser-native" { pi-agent-browser-native = pkgs.callPackage ./pkgs/pi-agent-browser-native.nix { pi-coding-agent = piPkg; }; }
-            // { default = piPkg; };
-        in lib.removeAttrs pkgSet [ "override" "overrideDerivation" ];
-
-      packagesFor = system: mkPackages (import nixpkgs {
-        inherit system;
-        overlays = [ bun2nix.overlays.default ];
-        config.allowUnfreePredicate = pkg: lib.getName pkg == "claude-code";
-      });
-    in {
-      packages = forAllSystems packagesFor;
-
-      # Overlay - all packages using prev.callPackage
-      overlays.default = final: prev:
-        let
-          bunPkgs = import nixpkgs {
-            system = prev.stdenv.hostPlatform.system;
-            overlays = [ bun2nix.overlays.default ];
-          };
-          cassPkg = prev.callPackage ./pkgs/cass.nix {};
           markitdownPythonPackages = import ./pkgs/markitdown-python-packages.nix {
             inherit (prev) ffmpeg-headless python3Packages;
           };
@@ -100,19 +46,43 @@
           dash-mcp-server = prev.callPackage ./pkgs/dash-mcp-server.nix {};
           markit = prev.callPackage ./pkgs/markit.nix {};
           markitdown-base = markitdownBasePkg;
-          markitdown = prev.callPackage ./pkgs/markitdown.nix { markitdown-base = markitdownBasePkg; markitdown-ocr = markitdownOcrPkg; };
+          markitdown = prev.callPackage ./pkgs/markitdown.nix {
+            markitdown-base = markitdownBasePkg;
+            markitdown-ocr = markitdownOcrPkg;
+          };
           markitdown-ocr = markitdownOcrPkg;
           xcodebuildmcp = prev.callPackage ./pkgs/xcodebuildmcp.nix { nodejs = prev.nodejs_22; };
           spogo = prev.callPackage ./pkgs/spogo.nix {};
-          qmd = prev.callPackage ./pkgs/qmd.nix { inherit (bunPkgs) bun2nix; };
-          cass = cassPkg;
-          cm = prev.callPackage ./pkgs/cm.nix { cass = cassPkg; };
+          qmd = prev.callPackage ./pkgs/qmd.nix {
+            bun2nix = (nixpkgs.legacyPackages.${prev.stdenv.hostPlatform.system}.extend bun2nix.overlays.default).bun2nix;
+          };
+          cass = prev.callPackage ./pkgs/cass.nix {};
+          cm = prev.callPackage ./pkgs/cm.nix { cass = final.cass; };
           herdr = prev.callPackage ./pkgs/herdr.nix {};
           agent-browser = prev.callPackage ./pkgs/agent-browser.nix {};
           cua-driver = prev.callPackage ./pkgs/cua-driver.nix {};
-          pi-web-search = prev.callPackage ./pkgs/pi-web-search.nix { pi-coding-agent = final.pi-coding-agent; };
-          pi-agent-browser-native = prev.callPackage ./pkgs/pi-agent-browser-native.nix { pi-coding-agent = final.pi-coding-agent; };
+          pi-web-search = prev.callPackage ./pkgs/pi-web-search.nix {
+            pi-coding-agent = final.pi-coding-agent;
+          };
+          pi-agent-browser-native = prev.callPackage ./pkgs/pi-agent-browser-native.nix {
+            pi-coding-agent = final.pi-coding-agent;
+          };
         };
+
+      packagesFor = system:
+        let
+          pkgs = import nixpkgs {
+            inherit system;
+            config.allowUnfreePredicate = pkg: lib.getName pkg == "claude-code";
+          };
+          allPkgs = lib.fix (selfPkgs: mkPackageSet selfPkgs pkgs);
+        in
+        (lib.filterAttrs (name: _: supports system name) allPkgs)
+        // { default = allPkgs.pi-coding-agent; };
+    in {
+      packages = forAllSystems packagesFor;
+
+      overlays.default = mkPackageSet;
 
       checks = self.packages;
     };

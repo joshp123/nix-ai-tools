@@ -46,17 +46,17 @@ let
     [ "npm_config_offline=\"false\"" ]
     (builtins.readFile "${path}/pkgs/build-support/node/build-npm-package/hooks/npm-config-hook.sh")
   ));
-  version = "1.6.1";
-  piNpmDepsHash = "sha256-WLez4/tAmJIQysd/0J6qHm64vo6zCgaaubrtcoVXBsk=";
+  version = "1.7.0";
+  piNpmDepsHash = "sha256-ca1P7AdtYPeJ77N9qjLXCav5ZwcNxrANm+qrybmdtiI=";
   src = fetchFromGitHub {
     owner = "earendil-works";
     repo = "pi";
     rev = "v${version}";
-    hash = "sha256-0sJNgCA6p1ZwsxI3tumtPu2LEqECt1Hqv1jQ+ASe2EY=";
+    hash = "sha256-EevNAo5UMNFm9PqKnBpShkbzw+qUtSgdmd5K+bY/EGc=";
   };
   piAiRelease = fetchurl {
     url = "https://registry.npmjs.org/@earendil-works/pi-ai/-/pi-ai-${version}.tgz";
-    hash = "sha256-GSxAe9acBjWMaFGapikK3INisTK+6RF0gMdgRFbVBzs=";
+    hash = "sha256-0N1Ubnx8Hf2rZYK+ihd+0RhMyFe2qHbT71dqHMgIihI=";
   };
 in
 buildNpmPackage {
